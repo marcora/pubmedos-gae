@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/!svn/ver/353/mako/trunk/lib/mako/ext
+END
+preprocessors.py
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/!svn/ver/218/mako/trunk/lib/mako/ext/preprocessors.py
+END
+turbogears.py
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/!svn/ver/293/mako/trunk/lib/mako/ext/turbogears.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/!svn/ver/76/mako/trunk/lib/mako/ext/__init__.py
+END
+pygmentplugin.py
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/!svn/ver/215/mako/trunk/lib/mako/ext/pygmentplugin.py
+END
+babelplugin.py
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/!svn/ver/339/mako/trunk/lib/mako/ext/babelplugin.py
+END
+autohandler.py
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/!svn/ver/353/mako/trunk/lib/mako/ext/autohandler.py
+END

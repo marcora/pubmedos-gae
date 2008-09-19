@@ -1,0 +1,40 @@
+application: pubmedos
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+
+- url: /favicon.ico
+  static_files: public/favicon.ico
+  upload: public/favicon.ico
+
+- url: /stylesheets
+  static_dir: public/stylesheets
+
+- url: /javascripts
+  static_dir: public/javascripts
+
+- url: /images
+  static_dir: public/images
+
+- url: /articles/(\d+)/folders(|/.*)
+  script: controllers/articles_folders.py
+
+- url: /articles/(\d+)/(.*)/folder/?
+  script: controllers/articles_folders.py
+
+- url: /folders(|/.*)
+  script: controllers/folders.py
+
+- url: /articles(|/.*)
+  script: controllers/articles.py
+
+- url: /users(|/.*)
+  script: controllers/users.py
+
+- url: /.*
+  script: controllers/root.py
+
+- url: /admin(|/.*)
+  script: $PYTHON_LIB/google/appengine/ext/admin

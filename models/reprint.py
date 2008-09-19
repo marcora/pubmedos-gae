@@ -1,0 +1,22 @@
+import base64, hashlib
+from google.appengine.ext import db
+
+class Reprint(db.Model):
+    ## datastore schema
+    checksum = db.StringProperty(required=True)
+    filedata = db.BlobProperty(required=True)
+    filesize = db.IntegerProperty(required=True)
+    updated_at = db.DateTimeProperty(required=True, auto_now=True)
+    created_at = db.DateTimeProperty(required=True, auto_now_add=True)
+
+    ## class methods
+    @staticmethod
+    def get_or_insert_by_filedata(filedata):
+        checksum = base64.urlsafe_b64encode(hashlib.sha1(filedata).digest())
+        key_name = 'checksum:'+checksum
+        reprint = Reprint.get_by_key_name(key_name)
+        if reprint is None:
+            reprint = Reprint.get_or_insert(key_name, checksum=checksum, filedata=db.Blob(filedata), filesize=len(filedata))
+        return reprint
+
+    ## instance methods

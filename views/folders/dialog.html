@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/pubmedos.css">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+    <script type="text/javascript">
+
+$(document).ready(function(){
+
+    function update_folders() {
+
+        $('#folder_title_input').val('').focus();
+
+        $.ajax({
+            type: 'GET',
+            url: '/folders',
+            success: function(folders) {
+                $('#folder_list').empty();
+                $.each(folders, function(index, folder) {
+                    $('#folder_list').append('<li class="folder" id="folder_'+folder.id+'" title="Click to see all articles in this folder"><img src="/images/folder.png" />&nbsp;<span><a href="#" id="folder_'+folder.id+'_title">'+folder.title+'</a>&nbsp;<span class="folder_cmds" id="folder_'+folder.id+'_cmds"/></span></li>');
+                });
+            },
+            async: false,
+            cache: false,
+            dataType: 'json',
+        });
+
+        $('li.folder a').click(function() {
+            var folder_id = $(this).parent().parent().attr('id').replace('folder_', '');
+            if (window.dialogArguments && window.dialogArguments.location) {
+                window.dialogArguments.location.href = '/folders/'+folder_id;
+                window.close()
+            }
+        });
+
+        $('li.folder > span').hover(
+            function(){
+                $('span.folder_cmds', this).html('<img class="toprated_articles_cmd" title="Click to see the top rated articles in this folder" src="/images/toprated.png" />&nbsp;<img class="favorite_articles_cmd" title="Click to see your favorite articles in this folder" src="/images/favorite.png" />&nbsp;<img class="work_articles_cmd" title="Click to see the articles on your desk that belongs to this folder" src="/images/work.png" />&nbsp;<img class="read_articles_cmd" title="Click to see the articles in your reading list that belong to this folder" src="/images/read.png" /> &middot; <img class="edit_folder_cmd" title="Click to edit this folder" src="/images/folder_edit.png" />&nbsp;<img class="remove_folder_cmd"  title="Click to remove this folder" src="/images/delete.png" />');
+            },
+            function(){
+                $('span.folder_cmds', this).empty();
+            }
+        );
+
+        $('span.folder_cmds').click(function(event) {
+            var folder_id = $(this).parent().parent().attr('id').replace('folder_', '');
+            var folder_title = $('#folder_'+folder_id+'_title').text();
+            var $target = $(event.target);
+            switch($target.attr('class')) {
+            case 'toprated_articles_cmd':
+                if (window.dialogArguments && window.dialogArguments.location) {
+                    window.dialogArguments.location.href = '/folders/'+folder_id;
+                    window.close()
+                }
+                break;
+            case 'favorite_articles_cmd':
+                if (window.dialogArguments && window.dialogArguments.location) {
+                    window.dialogArguments.location.href = '/folders/'+folder_id;
+                    window.close()
+                }
+                break;
+            case 'work_articles_cmd':
+                if (window.dialogArguments && window.dialogArguments.location) {
+                    window.dialogArguments.location.href = '/folders/'+folder_id;
+                    window.close()
+                }
+                break;
+            case 'read_articles_cmd':
+                if (window.dialogArguments && window.dialogArguments.location) {
+                    window.dialogArguments.location.href = '/folders/'+folder_id;
+                    window.close()
+                }
+                break;
+            case 'edit_folder_cmd':
+                function remove_editor() { $('#folder_'+folder_id+'_cmds').empty(); $('#folder_'+folder_id).show(); $('#folder_'+folder_id+'_editor').remove(); $('#folder_title_input').val('').focus(); }
+                var editor = '<li class="folder" id="folder_'+folder_id+'_editor"><img src="/images/folder.png" />&nbsp;<form id="folder_'+folder_id+'_editor_form" style="display: inline;" autocomplete="off"><input type="text" id="folder_'+folder_id+'_title_input" />&nbsp;<input type="submit" value="Save" />&nbsp;<input type="button" value="Cancel" id="cancel_folder_'+folder_id+'_editor" /></form></li>';
+                $('#folder_'+folder_id).after(editor).hide();
+                $('#folder_'+folder_id+'_title_input').val(folder_title).focus().keyup(function(e) {
+                    if (e.which == 27) {
+                        remove_editor();
+                        return false;
+                    }
+                })
+                $('#folder_'+folder_id+'_editor_form').submit(function() {
+                    var new_folder_title = $('#folder_'+folder_id+'_title_input').val();
+                    if ($.trim(new_folder_title)) {
+                        $.post('/folders/'+folder_id, { 'title': new_folder_title }, function() { update_folders() });
+                    }
+                    else { remove_editor() }
+                    return false;
+                });
+                $('#cancel_folder_'+folder_id+'_editor').click(function() {
+                    remove_editor();
+                    return false;
+                });
+                break;
+            case 'remove_folder_cmd':
+                if (confirm('Do you really want to remove folder "'+folder_title+'" from your archive?')) {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: '/folders/'+folder_id,
+                        success: function() { update_folders() },
+                        cache: false,
+                    });
+                }
+                break;
+            }
+            return false;
+        });
+    }
+
+    $('#folder_title_input').focus().keyup(function(e) {
+        if (e.which == 13) {
+            var folder_title = $('#folder_title_input').val();
+            if ($.trim(folder_title)) {
+                $.post('/folders', { 'title': folder_title }, function() { update_folders() });
+            }
+        }
+        return false;
+    });;
+
+    $('#add_folder').click(function() {
+        var folder_title = $('#folder_title_input').val();
+        if ($.trim(folder_title)) {
+            $.post('/folders', { 'title': folder_title }, function() { update_folders() });
+        } else {
+            $('#folder_title_input').val('').focus();
+        }
+        return false;
+    });
+
+    update_folders();
+
+});
+
+
+    </script>
+  </head>
+  <body>
+    <div id="doc3">
+      <div id="bd">
+        <h2 style="float: left;">Open folder</h2>
+        <input style="float: right;" type="button" value="Close Window" onclick="window.close(); return false;" />
+        <div style="clear: both;" class="editor_help">Click on folder name to see all articles in that folder</div>
+        <div class="folder"><img src="/images/folder.png" />&nbsp;<input type="text" id="folder_title_input" />&nbsp;<img id="add_folder"  title="Click to add this folder" src="/images/add.png" /></div>
+        <ul id="folder_list">
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

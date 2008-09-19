@@ -1,0 +1,21 @@
+class Recipe(db.Model):
+  text = db.TextProperty()
+  owner = db.UserProperty()
+  def put(self):
+    if not self.owner:
+      self.owner = users.get_current_user()
+    return db.Model.put(self)
+  def get_by_key_name(cls, key_name, parent=None):
+    entity = super(Recipe, cls).get_by_key_name(key_name, parent)
+    if entity.owner != users.get_current_user():
+      raise Exception("Access denied")
+    return entity
+# Set the owner automatically
+r = Recipe(key_name="secret sauce")
+r.text = "ketchup and mayonnaise"
+r.put()
+# Only allow the owner to get the record
+r = Recipe.get_by_key_name("secret sauce")
+
+
+

@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/pubmedos.css">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+    <script type="text/javascript">
+
+$(document).ready(function(){
+
+});
+
+    </script>
+  </head>
+  <body>
+    <div id="doc3">
+      <div id="bd">
+        {% if user %}
+        <h2><img src="/images/user.png" /> {{ user.long_name }} [{{ user.username }}]</h2>
+        <p id="affiliation">{{ user.affiliation }}</p>
+        <p>Click <a href="#">here</a> to send a message to {{ user.long_name }}</p>
+        <h3>Publications</h3>
+        <ul>
+        {% for article in user.authored_articles %}
+        <li><img src="/images/page_white_text.png" /> <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ article.pmid }}">{{ article.pmid }}</a></li>
+        {% endfor %}
+        </ul>
+        {% else %}
+        <p>User <b>{{ username }}</b> does not exist!</p>
+        {% endif %}
+      </div>
+    </div>
+  </body>
+</html>

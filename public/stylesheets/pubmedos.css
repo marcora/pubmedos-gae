@@ -1,0 +1,29 @@
+a { text-decoration: none; color: #336699; }
+
+a:hover { text-decoration: underline; color: #336699; }
+
+#bd { padding: 10px 0 10px 0; }
+
+li.folder { font-size: 131%; }
+
+h2 { font-weight: bold; font-size: 131%; }
+
+.selected { font-weight: bold; }
+
+#add_folder:hover { cursor: pointer; }
+
+span.folder_cmds > img:hover { cursor: pointer; }
+
+td.label { text-align: right; }
+
+td.input { text-align: left; }
+
+label { font-weight: bold; }
+
+td { padding: 4px; }
+
+h1, h2, h3, h4, h5, h6 { margin-bottom: 6px; }
+
+p { margin-bottom: 4px; }
+
+.last { margin-bottom: 0; }

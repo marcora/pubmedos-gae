@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <script src="http://www.google.com/jsapi"></script>
+    <script>
+      // Load jQuery
+      google.load("jquery", "1");
+      google.setOnLoadCallback(function(){
+      jQuery.noConflict();
+      (function($) {
+      $('.header').hide();
+      })(jQuery);
+      });
+    </script>
+    % if title is UNDEFINED:
+    <title>PubMed OS</title>
+    % else:
+    <title>PubMed OS / ${ title | h }</title>
+    % endif
+  </head>
+  <body>
+    <div class="header">
+      ${self.header()}
+    </div>
+    ${self.body()}
+    <div class="footer">
+      ${self.footer()}
+    </div>
+  </body>
+</html>
+
+<%def name="header()">
+    <h1><img src="http://www.ncbi.nlm.nih.gov/coreweb/images/pubmed/pubmed-logo.gif" alt="PubMed On Steroids" /></h1>
+</%def>
+
+<%def name="footer()">
+    <p>&copy; 2008 Edoardo &quot;Dado&quot; Marcora</p>
+</%def>

@@ -1,0 +1,83 @@
+import logging
+import os
+import urllib
+import mimetypes
+import Cookie
+import simplejson as json
+
+from google.appengine.api import memcache
+from google.appengine.ext import webapp
+from mako.lookup import TemplateLookup
+from mako.template import Template
+
+from models.user import User
+
+template_lookup = TemplateLookup(directories=[os.path.dirname(__file__).replace('/controllers', '/views')], output_encoding='utf-8', encoding_errors='replace')
+
+
+## helpers
+
+def url(*segments, **vars):
+  base_url = "http://%s" % os.environ.get('HTTP_HOST')
+  path = '/'.join([str(s) for s in segments])
+  if not path.startswith('/'):
+    path = '/' + path
+  if vars:
+    path += '?' + urllib.urlencode(vars)
+  return base_url + path
+
+def login_required(request_handler):
+  def wrapper(self, *args, **kwargs):
+    self.current_user = self.get_current_user()
+    if not self.current_user:
+      self.error(401)
+    else:
+      request_handler(self, *args, **kwargs)
+  return wrapper
+
+# base request handler
+class RequestHandler(webapp.RequestHandler):
+
+  def render_json(self, content):
+    self.response.headers['Content-Type'] = 'text/javascript'
+    cb = self.request.get('callback')
+    if cb:
+      self.response.out.write(cb + '(' + json.dumps(content) + ')')
+    else:
+      self.response.out.write(json.dumps(content))
+
+  def render_template(self, format='text/html'):
+    ext = mimetypes.guess_extension(format)
+    if ext:
+      template_name = self.__class__.__bases__[0].__name__.lower() + '/' + self.__class__.__name__.lower() + ext
+      template_vars = self.__dict__
+      self.response.headers["Content-Type"] = format
+      template = template_lookup.get_template(template_name)
+      self.response.out.write(template.render(**template_vars))
+    else:
+      raise
+
+  def render_text(self, text, format='text/plain'):
+    ext = mimetypes.guess_extension(format)
+    if ext:
+      self.response.headers["Content-Type"] = format
+      self.response.out.write(str(text))
+    else:
+      raise
+
+  def get_current_user(self):
+    user = None
+    cookie = Cookie.SimpleCookie(self.request.headers.get('Cookie'))
+    if cookie.has_key('sid'):
+      sid = cookie['sid'].value
+      if sid:
+        m = memcache.get(sid)
+        if m:
+          un_ra = m.split('|')
+          if len(un_ra) > 1:
+            username = un_ra[0]
+            remote_addr = un_ra[1]
+            if username and self.request.remote_addr == remote_addr:
+              user = User.get_by_key_name('username:'+username)
+    return user
+
