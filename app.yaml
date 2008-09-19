@@ -29,3 +29,7 @@ handlers:
 
 - url: /.*
   script: not_found.py
+
+- url: /admin/.*
+  script: $PYTHON_LIB/google/appengine/ext/admin
+  login: admin
