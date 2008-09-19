@@ -1,9 +1,9 @@
-import logging
 import os
 import urllib
+import logging
 import mimetypes
-import Cookie
 import simplejson as json
+import Cookie
 
 from google.appengine.api import memcache
 from google.appengine.ext import webapp
@@ -14,9 +14,7 @@ from models.user import User
 
 template_lookup = TemplateLookup(directories=[os.path.dirname(__file__).replace('/controllers', '/views')], output_encoding='utf-8', encoding_errors='replace')
 
-
 ## helpers
-
 def url(*segments, **vars):
   base_url = "http://%s" % os.environ.get('HTTP_HOST')
   path = '/'.join([str(s) for s in segments])
@@ -35,7 +33,7 @@ def login_required(request_handler):
       request_handler(self, *args, **kwargs)
   return wrapper
 
-# base request handler
+## base request handler
 class RequestHandler(webapp.RequestHandler):
 
   def render_json(self, content):
@@ -80,4 +78,3 @@ class RequestHandler(webapp.RequestHandler):
             if username and self.request.remote_addr == remote_addr:
               user = User.get_by_key_name('username:'+username)
     return user
-

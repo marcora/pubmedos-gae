@@ -1,30 +1,29 @@
 # from datetime import datetime
 # import iso8601
-from sets import Set
 import os
 import logging
 import uuid
 import base64
 import hashlib
-import Cookie
 import re
+import Cookie
+from sets import Set
 
-import wsgiref.handlers
-
+from google.appengine.ext import db
+from google.appengine.ext import webapp
+from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import memcache
 from google.appengine.api import mail
-from google.appengine.ext import webapp
 
 from models.user import User
 
 from controllers.app import *
 
-# base request handler
+## base request handler
 class Root(RequestHandler):
   pass
 
 ## helpers
-
 def b64_sha1(s):
   return base64.standard_b64encode(hashlib.sha1(s).digest())
 
@@ -50,9 +49,7 @@ def wsse_password_digest(nonce, created, password):
   s.update(password)
   return base64.standard_b64encode(s.digest())
 
-
 ## actions
-
 class index(Root):
   def get(self):
 #    self.title = 'Home'
@@ -173,9 +170,7 @@ class logout(Root):
         memcache.delete(sid)
     self.response.headers['Set-Cookie'] = 'sid=; expires=Sat, 29-Mar-1969 00:00:00 GMT;'
 
-
 ## routes
-
 def main():
   urls = [('/', index),
           ('/terms', terms),
@@ -185,8 +180,8 @@ def main():
           ('/activate/(\S+)', activate),
           ('/login', login),
           ('/logout', logout)]
-  application = webapp.WSGIApplication(urls ,debug=True)
-  wsgiref.handlers.CGIHandler().run(application)
+  application = webapp.WSGIApplication(urls, debug=True)
+  run_wsgi_app(application)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()

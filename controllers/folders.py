@@ -4,21 +4,20 @@ import urllib
 
 from ncbi.eutils import epost
 
-import wsgiref.handlers
-
+from google.appengine.ext import db
 from google.appengine.ext import webapp
+from google.appengine.ext.webapp.util import run_wsgi_app
 
 from models.folder import Folder
 from models.filing import Filing
 
 from controllers.app import *
 
-# base request handler
+## base request handler
 class Folders(RequestHandler):
   pass
 
 ## actions
-
 class list(Folders):
   def get(self): # index
     current_user = self.get_current_user()
@@ -100,15 +99,13 @@ class dialog(Folders):
     else:
       self.error(401)
 
-
 ## routes
-
 def main():
   urls = [('/folders', list),
           ('/folders/(\d+)', item),
           ('/folders/dialog', dialog)]
   application = webapp.WSGIApplication(urls, debug=True)
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()

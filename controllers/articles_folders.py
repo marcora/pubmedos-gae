@@ -1,7 +1,8 @@
 import logging
-import wsgiref.handlers
 
+from google.appengine.ext import db
 from google.appengine.ext import webapp
+from google.appengine.ext.webapp.util import run_wsgi_app
 
 from models.article import Article
 from models.rating import Rating
@@ -10,9 +11,11 @@ from models.filing import Filing
 
 from controllers.app import *
 
+## base request handler
 class ArticlesFolders(RequestHandler):
   pass
 
+## actions
 class list(ArticlesFolders):
   def get(self, pmid):
     current_user = self.get_current_user()
@@ -103,14 +106,13 @@ class dialog(ArticlesFolders):
     else:
       self.error(401)
 
-
-
+## routes
 def main():
   urls = [('/articles/(\d+)/folders', list),
           ('/articles/(\d+)/folders/(\d+)', item),
           ('/articles/(\d+)/folders/dialog', dialog)]
   application = webapp.WSGIApplication(urls, debug=True)
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()

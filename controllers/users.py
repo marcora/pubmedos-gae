@@ -1,21 +1,19 @@
 import logging
 
-import wsgiref.handlers
-
-from google.appengine.api import mail
+from google.appengine.ext import db
 from google.appengine.ext import webapp
+from google.appengine.ext.webapp.util import run_wsgi_app
+from google.appengine.api import mail
 
 from models.user import User
 
 from controllers.app import *
 
-# base request handler
+## base request handler
 class Users(RequestHandler):
   pass
 
-
 ## actions
-
 class item(Users):
   def get(self, username):
     self.username = username
@@ -28,13 +26,11 @@ class item(Users):
 #    else:
 #      self.error(404)
 
-
 ## routes
-
 def main():
   urls = [('/users/(\w+)', item)]
-  application = webapp.WSGIApplication(urls ,debug=True)
-  wsgiref.handlers.CGIHandler().run(application)
+  application = webapp.WSGIApplication(urls, debug=True)
+  run_wsgi_app(application)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()

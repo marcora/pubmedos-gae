@@ -4,13 +4,11 @@ import re
 
 from sets import Set
 from ncbi.eutils import epost
-
-from postmarkup import postmarkup #from textile import textile
-
-import wsgiref.handlers
+from postmarkup import postmarkup
 
 from google.appengine.ext import db
 from google.appengine.ext import webapp
+from google.appengine.ext.webapp.util import run_wsgi_app
 
 from models.article import Article
 from models.rating import Rating
@@ -20,13 +18,11 @@ from models.reprint import Reprint
 
 from controllers.app import *
 
-# base request handler
+## base request handler
 class Articles(RequestHandler):
   pass
 
-
 ## helpers
-
 def annotation_to_html(annotation):
   annotation_markup = postmarkup.create(use_pygments=False)
   annotation_markup.add_tag(u'pmid',
@@ -39,7 +35,6 @@ def annotation_to_html(annotation):
 
 
 ## actions
-
 class list(Articles):
   @login_required
   def get(self):
@@ -317,9 +312,7 @@ class ads(Articles):
     else:
       self.error(404)
 
-
 ## routes
-
 def main():
   urls = [('/articles', list),
           ('/articles/file', redirect_file),
@@ -339,7 +332,7 @@ def main():
           ('/articles/(\d+)/reprint', reprint),
           ('/articles/(\d+)/ads', ads)]
   application = webapp.WSGIApplication(urls, debug=True)
-  wsgiref.handlers.CGIHandler().run(application)
+  run_wsgi_app(application)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()
