@@ -32,7 +32,7 @@ class item(Users):
 ## routes
 
 def main():
-  urls = [('/users/(\w+)/?', item)]
+  urls = [('/users/(\w+)', item)]
   application = webapp.WSGIApplication(urls ,debug=True)
   wsgiref.handlers.CGIHandler().run(application)
 

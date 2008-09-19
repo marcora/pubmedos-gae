@@ -104,9 +104,9 @@ class dialog(Folders):
 ## routes
 
 def main():
-  urls = [('/folders/?', list),
-          ('/folders/(\d+)/?', item),
-          ('/folders/dialog/?', dialog)]
+  urls = [('/folders', list),
+          ('/folders/(\d+)', item),
+          ('/folders/dialog', dialog)]
   application = webapp.WSGIApplication(urls, debug=True)
   wsgiref.handlers.CGIHandler().run(application)
 

@@ -178,13 +178,13 @@ class logout(Root):
 
 def main():
   urls = [('/', index),
-          ('/terms/?', terms),
-          ('/help/?', help),
-          ('/about/?', about),
-          ('/register/?', register),
+          ('/terms', terms),
+          ('/help', help),
+          ('/about', about),
+          ('/register', register),
           ('/activate/(\S+)', activate),
-          ('/login/?', login),
-          ('/logout/?', logout)]
+          ('/login', login),
+          ('/logout', logout)]
   application = webapp.WSGIApplication(urls ,debug=True)
   wsgiref.handlers.CGIHandler().run(application)
 

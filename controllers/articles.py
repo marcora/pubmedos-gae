@@ -321,23 +321,23 @@ class ads(Articles):
 ## routes
 
 def main():
-  urls = [('/articles/?', list),
-          ('/articles/file/?', redirect_file),
-          ('/articles/toprated/?', redirect_toprated),
-          ('/articles/favorite/?', redirect_favorite),
-          ('/articles/work/?', redirect_work),
-          ('/articles/read/?', redirect_read),
-          ('/articles/author/?', redirect_author),
-          ('/articles/(\d+)/?', item),
-          ('/articles/(\d+)/file/?', toggle_file),
-          ('/articles/(\d+)/favorite/?', toggle_favorite),
-          ('/articles/(\d+)/work/?', toggle_work),
-          ('/articles/(\d+)/read/?', toggle_read),
-          ('/articles/(\d+)/author/?', toggle_author),
-          ('/articles/(\d+)/rating/?', update_rating),
-          ('/articles/(\d+)/annotation/?', update_annotation),
-          ('/articles/(\d+)/reprint/?', reprint),
-          ('/articles/(\d+)/ads/?', ads)]
+  urls = [('/articles', list),
+          ('/articles/file', redirect_file),
+          ('/articles/toprated', redirect_toprated),
+          ('/articles/favorite', redirect_favorite),
+          ('/articles/work', redirect_work),
+          ('/articles/read', redirect_read),
+          ('/articles/author', redirect_author),
+          ('/articles/(\d+)', item),
+          ('/articles/(\d+)/file', toggle_file),
+          ('/articles/(\d+)/favorite', toggle_favorite),
+          ('/articles/(\d+)/work', toggle_work),
+          ('/articles/(\d+)/read', toggle_read),
+          ('/articles/(\d+)/author', toggle_author),
+          ('/articles/(\d+)/rating', update_rating),
+          ('/articles/(\d+)/annotation', update_annotation),
+          ('/articles/(\d+)/reprint', reprint),
+          ('/articles/(\d+)/ads', ads)]
   application = webapp.WSGIApplication(urls, debug=True)
   wsgiref.handlers.CGIHandler().run(application)
 
