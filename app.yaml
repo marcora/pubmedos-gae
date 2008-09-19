@@ -27,9 +27,10 @@ handlers:
 - url: /(|login|logout|register|activate|terms|help|about)
   script: controllers/root.py
 
-- url: /.*
-  script: not_found.py
-
 - url: /admin/.*
   script: $PYTHON_LIB/google/appengine/ext/admin
   login: admin
+
+- url: /.*
+  script: not_found.py
+
