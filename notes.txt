@@ -17,5 +17,17 @@ r.put()
 # Only allow the owner to get the record
 r = Recipe.get_by_key_name("secret sauce")
 
+====================================================================
 
+See http://fi.am/entry/urlsafe-base64-encodingdecoding-in-two-lines/
+
+You can do this using Python's built-in base64 library in just two lines of code:
+
+import base64
+
+def uri_b64encode(s):
+     return base64.urlsafe_b64encode(s).strip('=')
+
+def uri_b64decode(s):
+     return base64.urlsafe_b64decode(s + '=' * (len(s) % 4))
 
