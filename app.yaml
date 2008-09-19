@@ -9,8 +9,14 @@ handlers:
   static_files: public/favicon.ico
   upload: public/favicon.ico
 
-- url: /(stylesheets|javascripts|images)
-  static_dir: public/\1
+- url: /javascripts
+  static_dir: public/javascripts
+
+- url: /stylesheets
+  static_dir: public/stylesheets
+
+- url: /images
+  static_dir: public/images
 
 - url: /articles/(\d+)/folders
   script: controllers/articles_folders.py
