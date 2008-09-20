@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 37
-/!svn/ver/353/mako/trunk/lib/mako/ext
+/!svn/ver/403/mako/trunk/lib/mako/ext
 END
 preprocessors.py
 K 25
@@ -31,7 +31,7 @@ babelplugin.py
 K 25
 svn:wc:ra_dav:version-url
 V 52
-/!svn/ver/339/mako/trunk/lib/mako/ext/babelplugin.py
+/!svn/ver/403/mako/trunk/lib/mako/ext/babelplugin.py
 END
 autohandler.py
 K 25
