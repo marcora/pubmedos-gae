@@ -1,6 +1,12 @@
 import base64, hashlib
 from google.appengine.ext import db
 
+def really_urlsafe_b64encode(s):
+     return base64.urlsafe_b64encode(s).strip('=')
+
+def really_urlsafe_b64decode(s):
+     return base64.urlsafe_b64decode(s + '=' * (len(s) % 4))
+
 class Reprint(db.Model):
     ## datastore schema
     checksum = db.StringProperty(required=True)
@@ -12,11 +18,17 @@ class Reprint(db.Model):
     ## class methods
     @staticmethod
     def get_or_insert_by_filedata(filedata):
-        checksum = base64.urlsafe_b64encode(hashlib.sha1(filedata).digest())
+        checksum = really_urlsafe_b64encode(hashlib.sha1(filedata).digest())
         key_name = 'checksum:'+checksum
         reprint = Reprint.get_by_key_name(key_name)
         if reprint is None:
             reprint = Reprint.get_or_insert(key_name, checksum=checksum, filedata=db.Blob(filedata), filesize=len(filedata))
+        return reprint
+
+    @staticmethod
+    def get_by_checksum(checksum):
+        key_name = 'checksum:'+checksum
+        reprint = Reprint.get_by_key_name(key_name)
         return reprint
 
     ## instance methods
