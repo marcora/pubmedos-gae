@@ -15,19 +15,19 @@ $(document).ready(function(){
   <body>
     <div id="doc3">
       <div id="bd">
-        {% if user %}
-        <h2><img src="/images/user.png" /> {{ user.long_name }} [{{ user.username }}]</h2>
-        <p id="affiliation">{{ user.affiliation }}</p>
-        <p>Click <a href="#">here</a> to send a message to {{ user.long_name }}</p>
+        % if user
+        <h2><img src="/images/user.png" /> ${ user.long_name } [${ user.username }]</h2>
+        <p id="affiliation">${ user.affiliation }</p>
+        <p>Click <a href="#">here</a> to send a message to ${ user.long_name }</p>
         <h3>Publications</h3>
         <ul>
-        {% for article in user.authored_articles %}
-        <li><img src="/images/page_white_text.png" /> <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ article.pmid }}">{{ article.pmid }}</a></li>
-        {% endfor %}
+          % for article in user.authored_articles
+          <li><img src="/images/page_white_text.png" /> <a href="http://www.ncbi.nlm.nih.gov/pubmed/${ article.pmid }">${ article.pmid }</a></li>
+          % endfor
         </ul>
-        {% else %}
-        <p>User <b>{{ username }}</b> does not exist!</p>
-        {% endif %}
+        % else
+        <p>User <b>${ username }</b> does not exist!</p>
+        % endif
       </div>
     </div>
   </body>
