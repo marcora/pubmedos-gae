@@ -16,15 +16,14 @@ class Users(RequestHandler):
 ## actions
 class item(Users):
   def get(self, username):
-    self.username = username
-    self.current_user = self.get_current_user()
-    self.user = User.get_by_username(username)
-    self.render_template()
-#    user = User.get_by_username(username)
-#    if user:
-#      self.render_template()
-#    else:
-#      self.error(404)
+    user = User.get_by_username(username)
+    if user:
+      self.current_user = self.get_current_user()
+      self.username = username
+      self.user = User.get_by_username(username)
+      self.render_template()
+    else:
+      self.error(404)
 
 ## routes
 def main():
