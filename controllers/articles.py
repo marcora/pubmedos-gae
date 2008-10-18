@@ -127,7 +127,7 @@ class update_annotation(Articles):
       if not value:
         self.error(400)
       else:
-        rating.annotation = db.Text(value, encoding='utf-8')
+        rating.annotation = db.Text(value.decode('utf-8'))
         rating.put()
         if rating.annotation:
           annotation_html = annotation_to_html(rating.annotation)

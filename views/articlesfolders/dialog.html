@@ -14,15 +14,15 @@ $(document).ready(function(){
 
         $.ajax({
             type: 'GET',
-            url: '/articles/{{ pmid }}/folders',
+            url: '/articles/${ pmid }/folders',
             data: { 'selected': true },
             success: function(folders) {
                 $('#folder_list').empty();
                 $.each(folders, function(index, folder) {
                     if (folder.is_selected) {
-                        $('#folder_list').append('<li class="folder" id="folder_'+folder.id+'" title="Click to remove article {{ pmid }} from this folder"><img src="/images/file.png" />&nbsp;<span><a class="selected" href="#" id="folder_'+folder.id+'_title">'+folder.title+'</a>&nbsp;<span class="folder_cmds" id="folder_'+folder.id+'_cmds"/></span></li>');
+                        $('#folder_list').append('<li class="folder" id="folder_'+folder.id+'" title="Click to remove article ${ pmid } from this folder"><img src="/images/folder.png" />&nbsp;<span><a class="selected" href="#" id="folder_'+folder.id+'_title">'+folder.title+'</a>&nbsp;<span class="folder_cmds" id="folder_'+folder.id+'_cmds"/></span></li>');
                     } else {
-                        $('#folder_list').append('<li class="folder" id="folder_'+folder.id+'" title="Click to add article {{ pmid }} to this folder"><img src="/images/folder.png" />&nbsp;<span><a href="#" id="folder_'+folder.id+'_title">'+folder.title+'</a>&nbsp;<span class="folder_cmds" id="folder_'+folder.id+'_cmds"/></span></li>');
+                        $('#folder_list').append('<li class="folder" id="folder_'+folder.id+'" title="Click to add article ${ pmid } to this folder"><img src="/images/folder.png" />&nbsp;<span><a href="#" id="folder_'+folder.id+'_title">'+folder.title+'</a>&nbsp;<span class="folder_cmds" id="folder_'+folder.id+'_cmds"/></span></li>');
                     }
                 });
             },
@@ -36,12 +36,12 @@ $(document).ready(function(){
             if ($(this).hasClass('selected')) {
                 $.ajax({
                     type: 'DELETE',
-                    url: '/articles/'+{{ pmid }}+'/folders/'+folder_id,
+                    url: '/articles/'+${ pmid }+'/folders/'+folder_id,
                     success: function(){ update_folders() },
                     cache: false,
                 });
             } else {
-                $.post('/articles/'+{{ pmid }}+'/folders/'+folder_id, {}, function() { update_folders() } );
+                $.post('/articles/'+${ pmid }+'/folders/'+folder_id, {}, function() { update_folders() } );
             }
             return false;
         });
@@ -128,9 +128,9 @@ $(document).ready(function(){
   <body>
     <div id="doc3">
       <div id="bd">
-        <h2 style="float: left;">File article {{ pmid }}</h2>
+        <h2 style="float: left;">File article ${ pmid }</h2>
         <input style="float: right;" type="button" value="Close Window" onclick="window.close(); return false;" />
-        <div style="clear: both;" class="editor_help">Click on folder name to add/remove article {{ pmid }} to/from that folder</div>
+        <div style="clear: both;" class="editor_help">Click on folder name to add/remove article ${ pmid } to/from that folder</div>
         <div class="folder"><img src="/images/folder.png" />&nbsp;<input type="text" id="folder_title_input" />&nbsp;<img id="add_folder"  title="Click to add this folder" src="/images/add.png" /></div>
         <ul id="folder_list">
         </ul>

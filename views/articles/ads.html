@@ -2,23 +2,23 @@
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" value="{{ abstract }}" />
-    <meta name="keywords" value="Science, Biology, Medicine, Drugs, Diseases, {{ keywords }}" />
-    <title>{{ title }}</title>
+    <meta name="description" value="${ abstract }" />
+    <meta name="keywords" value="Science, Biology, Medicine, Drugs, Diseases, ${ keywords }" />
+    <title>${ title }</title>
   </head>
   <body style="margin: 0; padding: 0;">
     <div style="display: none;" id="article_info">
-      <h2>Google Ads for PubMed Article {{ pmid }}</h2>
+      <h2>Google Ads for PubMed Article ${ pmid }</h2>
       <h3>Title</h3>
-      <p>{{ title|escape }}</p>
+      <p>${ title | h }</p>
       <h3>Authors</h3>
-      <p>{{ authors|escape }}</p>
+      <p>${ authors | h }</p>
       <h3>Source</h3>
-      <p>{{ source|escape }}</p>
+      <p>${ source | h }</p>
       <h3>Abstract</h3>
-      <p>{{ abstract|escape }}</p>
+      <p>${ abstract | h }</p>
       <h3>Keywords</h3>
-      <p>Science, Biology, Medicine, Drugs, Diseases, {{ keywords|escape }}</p>
+      <p>Science, Biology, Medicine, Drugs, Diseases, ${ keywords | h}</p>
     </div>
     <div id="google_adsense">
     <script type="text/javascript"><!--

@@ -62,7 +62,7 @@ indexes:
   - name: user
   - name: pmid
 
-# Unused in query history -- copied from input.
+# Used once in query history.
 - kind: Rating
   properties:
   - name: user
