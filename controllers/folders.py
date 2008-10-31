@@ -21,12 +21,12 @@ class Folders(RequestHandler):
 class root(Folders):
   @login_required
   def get(self): # index
-    current_user = self.current_user()
+    current_user = self.current_user
     self.json([folder.to_hash() for folder in current_user.folders.order('title')])
 
   @login_required
   def post(self): # create
-    current_user = self.current_user()
+    current_user = self.current_user
     title = self.request.get('title')
     if title:
       title = title.decode('utf-8')
@@ -41,7 +41,7 @@ class root(Folders):
 class item(Folders):
   @login_required
   def get(self, id): # show
-    current_user = self.current_user()
+    current_user = self.current_user
     folder = Folder.get_by_id(int(id), parent=current_user)
     if folder:
       env, key = epost(ids=[rating.pmid for rating in folder.ratings])
@@ -54,7 +54,7 @@ class item(Folders):
 
   @login_required
   def post(self, id): # update
-    current_user = self.current_user()
+    current_user = self.current_user
     title = self.request.get('title')
     if title:
       title = title.decode('utf-8')
@@ -73,7 +73,7 @@ class item(Folders):
 
   @login_required
   def delete(self, id): # destroy
-    current_user = self.current_user()
+    current_user = self.current_user
     folder = Folder.get_by_id(int(id), parent=current_user)
     if folder:
       folder.delete()
@@ -83,7 +83,7 @@ class item(Folders):
 class root_dialog(Folders):
   @login_required
   def get(self):
-    current_user = self.current_user()
+    current_user = self.current_user
     self.folders = current_user.folders.order('title')
     self.template()
 

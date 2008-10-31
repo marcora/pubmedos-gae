@@ -15,12 +15,13 @@ class Users(RequestHandler):
 
 ## actions
 class item(Users):
+  @login_required
   def get(self, username):
     user = User.get_by_username(username)
     if user:
-      self.current_user = self.get_current_user()
+      self.current_user = self.current_user
       self.username = username
-      self.user = User.get_by_username(username)
+      self.user = user
       self.template()
     else:
       self.error(404)
