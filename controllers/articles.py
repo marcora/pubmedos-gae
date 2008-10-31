@@ -1,4 +1,4 @@
-import logging, urllib
+import logging, urllib, re
 
 from ncbi.eutils import epost
 from postmarkup import postmarkup
@@ -70,7 +70,7 @@ class item(Articles):
       else:
         annotation_html = '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
       if rating.is_file:
-        folders = [folder.to_hash() for folder in rating.folders]
+        folders = [folder.to_hash() for folder in rating.folders if folder]
       else:
         folders = []
       record = article.to_hash()
@@ -220,7 +220,7 @@ class root_file_redirect(Articles):
     ratings = Rating.gql("WHERE is_file = TRUE AND ANCESTOR IS :parent", parent=current_user)
     env, key = epost(ids=[rating.pmid for rating in ratings])
     if not (env and key):
-      self.error(404)
+      self.error(500)
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=File" % (key, urllib.quote_plus(env)))
 
@@ -231,7 +231,7 @@ class root_toprated_redirect(Articles):
     ratings = Rating.gql("WHERE rating > 2 AND ANCESTOR IS :parent", parent=current_user)
     env, key = epost(ids=[rating.pmid for rating in ratings])
     if not (env and key):
-      self.error(404)
+      self.error(500)
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=TopRated" % (key, urllib.quote_plus(env)))
 
@@ -242,7 +242,7 @@ class root_favorite_redirect(Articles):
     ratings = Rating.gql("WHERE is_favorite = TRUE AND ANCESTOR IS :parent", parent=current_user)
     env, key = epost(ids=[rating.pmid for rating in ratings])
     if not (env and key):
-      self.error(404)
+      self.error(500)
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Favorite" % (key, urllib.quote_plus(env)))
 
@@ -253,7 +253,7 @@ class root_work_redirect(Articles):
     ratings = Rating.gql("WHERE is_work = TRUE AND ANCESTOR IS :parent", parent=current_user)
     env, key = epost(ids=[rating.pmid for rating in ratings])
     if not (env and key):
-      self.error(404)
+      self.error(500)
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Work" % (key, urllib.quote_plus(env)))
 
@@ -264,7 +264,7 @@ class root_read_redirect(Articles):
     ratings = Rating.gql("WHERE is_read = TRUE AND ANCESTOR IS :parent", parent=current_user)
     env, key = epost(ids=[rating.pmid for rating in ratings])
     if not (env and key):
-      self.error(404)
+      self.error(500)
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Read" % (key, urllib.quote_plus(env)))
 
@@ -275,7 +275,7 @@ class root_author_redirect(Articles):
     ratings = Rating.gql("WHERE is_author = TRUE AND ANCESTOR IS :parent", parent=current_user)
     env, key = epost(ids=[rating.pmid for rating in ratings])
     if not (env and key):
-      self.error(404)
+      self.error(500)
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Author" % (key, urllib.quote_plus(env)))
 
@@ -308,7 +308,7 @@ class item_sponsored_links(Articles):
 
 ## routes
 def main():
-  urls = [('/articles', root),
+  urls = [('/articles/?', root),
           ('/articles/file/redirect', root_file_redirect),
           ('/articles/toprated/redirect', root_toprated_redirect),
           ('/articles/favorite/redirect', root_favorite_redirect),

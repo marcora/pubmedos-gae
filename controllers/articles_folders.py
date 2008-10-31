@@ -37,7 +37,7 @@ class root(ArticlesFolders):
             record.update({ 'selected': False })
             folders.append(record)
       else:
-        folders = [folder.to_hash() for folder in rating.folders]
+        folders = [folder.to_hash() for folder in rating.folders if folder]
       self.json(folders)
 
 class root_dialog(ArticlesFolders):
@@ -63,7 +63,7 @@ class item(ArticlesFolders):
     else:
       folder = Folder.get_by_id(int(folder_id), parent=current_user)
       if folder:
-        self.json(folder.add_rating(rating))
+        self.json(folder.append_rating(rating))
       else:
         self.error(400)
 
@@ -77,14 +77,14 @@ class item(ArticlesFolders):
     else:
       folder = Folder.get_by_id(int(folder_id), parent=current_user)
       if folder:
-        self.json(folder.del_rating(rating))
+        self.json(folder.remove_rating(rating))
       else:
         self.error(400)
 
 
 ## routes
 def main():
-  urls = [('/articles/(\d+)/folders', root),
+  urls = [('/articles/(\d+)/folders/?', root),
           ('/articles/(\d+)/folders/(\d+)', item),
           ('/articles/(\d+)/folders/dialog', root_dialog)]
   application = webapp.WSGIApplication(urls, debug=True)

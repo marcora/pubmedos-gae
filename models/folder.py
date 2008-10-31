@@ -11,7 +11,7 @@ def transaction(wrapped):
 class Folder(db.Model):
     ## datastore schema
     user = db.ReferenceProperty(User, required=True, collection_name='folders')
-    title = db.StringProperty(required=True, validator=lambda v: type(v) == type(u''))
+    title = db.CategoryProperty(required=True)
     # sup_folder = db.SelfReferenceProperty(collection_name='sub_folders')
     ratings_count_cache = db.IntegerProperty(required=True, default=0)
     updated_at = db.DateTimeProperty(required=True, auto_now=True)
@@ -22,7 +22,7 @@ class Folder(db.Model):
     def get_or_insert_by_user_and_title(user, title):
         folder = Folder.gql("WHERE user = :user AND title = :title AND ANCESTOR IS :user", user=user, title=title).get()
         if folder is None:
-            folder = Folder(user=user, title=title, parent=user)
+            folder = Folder(user=user, title=db.Category(title), parent=user)
             folder.put()
         if folder.is_saved():
             return folder
@@ -39,7 +39,7 @@ class Folder(db.Model):
 
     @property
     def ratings(self):
-        return Rating.gql('WHERE folders = :1', self.key())
+        return Rating.gql('WHERE folder_list = :1', self.key())
 
     def put(self):
         # ensure uniqueness based on user and title
@@ -47,10 +47,16 @@ class Folder(db.Model):
             raise db.NotSavedError()
         return super(Folder, self).put()
 
+    def delete(self):
+        # cleanup ratings folder list
+        for rating in self.ratings:
+            self.remove_rating(rating)
+        return super(Folder, self).delete()
+
     @transaction
-    def add_rating(self, rating):
+    def append_rating(self, rating):
         try:
-            if self.user != rating.user: raise Exception()
+            if self.user.key() != rating.user.key(): raise Exception()
             if not self.key() in rating.folder_list:
                 rating.folder_list.append(self.key())
                 rating.put()
@@ -61,9 +67,9 @@ class Folder(db.Model):
             return False
 
     @transaction
-    def del_rating(self, rating):
+    def remove_rating(self, rating):
         try:
-            if self.user != rating.user: raise Exception()
+            if self.user.key() != rating.user.key(): raise Exception()
             if self.key() in rating.folder_list:
                 rating.folder_list.remove(self.key())
                 rating.put()

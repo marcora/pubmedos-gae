@@ -38,7 +38,7 @@ $(document).ready(function(){
         $('li.folder a').click(function() {
             var folder_id = $(this).parent().parent().attr('id').replace('folder_', '');
             if (window.dialogArguments && window.dialogArguments.location) {
-                window.dialogArguments.location.href = '/folders/'+folder_id;
+                window.dialogArguments.location.href = '/folders/'+folder_id+'/articles/redirect';
                 window.close()
             }
         });
@@ -59,25 +59,25 @@ $(document).ready(function(){
             switch($target.attr('class')) {
             case 'toprated_articles_cmd':
                 if (window.dialogArguments && window.dialogArguments.location) {
-                    window.dialogArguments.location.href = '/folders/'+folder_id;
+                    window.dialogArguments.location.href = '/folders/'+folder_id+'/articles/redirect';
                     window.close()
                 }
                 break;
             case 'favorite_articles_cmd':
                 if (window.dialogArguments && window.dialogArguments.location) {
-                    window.dialogArguments.location.href = '/folders/'+folder_id;
+                    window.dialogArguments.location.href = '/folders/'+folder_id+'/articles/redirect';
                     window.close()
                 }
                 break;
             case 'work_articles_cmd':
                 if (window.dialogArguments && window.dialogArguments.location) {
-                    window.dialogArguments.location.href = '/folders/'+folder_id;
+                    window.dialogArguments.location.href = '/folders/'+folder_id+'/articles/redirect';
                     window.close()
                 }
                 break;
             case 'read_articles_cmd':
                 if (window.dialogArguments && window.dialogArguments.location) {
-                    window.dialogArguments.location.href = '/folders/'+folder_id;
+                    window.dialogArguments.location.href = '/folders/'+folder_id+'/articles/redirect';
                     window.close()
                 }
                 break;
