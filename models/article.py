@@ -1,14 +1,9 @@
-import re
 from datetime import datetime
-from google.appengine.ext import db
-from google.appengine.api import urlfetch
 from xml.etree.ElementTree import fromstring, tostring
 
-# transaction decorator
-def transaction(method):
-  def wrapper(*args, **kwds):
-    return db.run_in_transaction(method, *args, **kwds)
-  return wrapper
+from google.appengine.ext import db
+from google.appengine.api import urlfetch
+
 
 class Article(db.Model):
     ## datastore schema
@@ -38,19 +33,19 @@ class Article(db.Model):
         return article
 
     ## instance methods
-    def get_raters(self):
-        return [rating.user for rating in self.ratings]
-    raters = property(get_raters)
+    def to_hash(self):
+        return { 'id': self.pmid, 'ratings_count': self.ratings_count_cache, 'ratings_average_rating': self.ratings_average_rating_cache }
 
-    def get_ratings_count(self):
-        return self.get_ratings_stats()[0]
-    ratings_count = property(get_ratings_count)
+    @property
+    def ratings_count(self):
+        return self.ratings_stats[0]
 
-    def get_ratings_average_rating(self):
-        return self.get_ratings_stats()[1]
-    ratings_average_rating = property(get_ratings_average_rating)
+    @property
+    def ratings_average_rating(self):
+        return self.ratings_stats[1]
 
-    def get_ratings_stats(self):
+    @property
+    def ratings_stats(self):
         count = 0
         sum = 0
         average = None
@@ -61,25 +56,14 @@ class Article(db.Model):
             average = float(sum)/count
         return (count, average)
 
-    def set_ratings_stats(self):
-        count, average = self.get_ratings_stats()
+    def cache_ratings_stats(self):
+        count, average = self.ratings_stats
         self.ratings_count_cache = count
         self.ratings_average_rating_cache = average
         self.put()
 
     def delete(self):
-        # prevent deletion
         pass
-
-#    def put(self):
-#        key = super(Article, self).put()
-#        query = Article.gql("WHERE pmid = :pmid", pmid=self.pmid)
-#        if query.count() == 0:
-#            return key
-#        else:
-#            Article.get(key).delete()
-#            query.bind()
-#            return query.get().key()
 
     def record(self):
         xml = fromstring(self.xml.encode('utf-8'))
@@ -115,55 +99,3 @@ class Article(db.Model):
         keywords = [extract_keyword(keyword) for keyword in keywords]
         keywords = ', '.join(keywords)
         return { 'title': title, 'source': source, 'abstract': abstract, 'authors': authors, 'keywords': keywords  }
-
-
-
-
-
-#class Journal(db.Model):
-#    nlmid = db.StringProperty(required=True)
-#    title = db.StringProperty(required=True)
-#    title_alt = db.StringProperty(required=True)
-#    title_iso = db.StringProperty()
-#    pissn = db.StringProperty()
-#    eissn = db.StringProperty()
-#
-#    def get_or_insert_by_nlmid(cls, nlmid):
-#        nlmid = str(nlmid)
-#        key_name = 'nlmid:' + nlmid
-#        journal = Journal.get_by_key_name(key_name)
-#        if journal: return journal
-#        url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=journals&term=%s[nlmid]" % nlmid
-#        result = urlfetch.fetch(url)
-#        if result.status_code == 200:
-#            xml = fromstring(result.content).getroot()
-#            if xml.findtext('Count') == '1':
-#                id = xml.findtext('IdList/Id')
-#            else:
-#                return None
-#        else:
-#            return None
-#        url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=journals&retmode=xml&rettype=full&id="+id
-#        result = urlfetch.fetch(url)
-#        if result.status_code == 200:
-#            xml = fromstring(result.content).getroot()
-#            xml = xml.find('.//Serial')
-#            if xml and xml.findtext('NlmUniqueID') == nlmid:
-#                title = xml.findtext('MedlineTA')
-#                title_alt = xml.findtext('Title').replace('\n', ' ').strip()
-#                title_iso = xml.findtext('ISOAbbreviation', default=None)
-#                pissn = xml.findtext("ISSN[@IssnType='Print']", default=None)
-#                eissn = xml.findtext("ISSN[@IssnType='Electronic']", default=None)
-#                return Journal.get_or_insert(key_name = key_name, nlmid = nlmid, title = title, title_alt = title_alt, title_iso = title_iso, pissn = pissn, eissn = eissn)
-#            else:
-#                return None
-#        else:
-#            return None
-#
-#    get_or_insert_by_nlmid = classmethod(get_or_insert_by_nlmid)
-#
-#    def put(self):
-#        key = super(Journal, self).put()
-#        if Journal.gql("WHERE nlmid = :nlmid ", nlmid = self.nlmid).count() > 1:
-#            Journal.get(key).delete()
-#            raise 'duplicate entity exception'

@@ -1,5 +1,9 @@
 import base64, hashlib
+
 from google.appengine.ext import db
+
+def b64_sha1(s):
+  return base64.standard_b64encode(hashlib.sha1(s).digest())
 
 def really_urlsafe_b64encode(s):
      return base64.urlsafe_b64encode(s).strip('=')

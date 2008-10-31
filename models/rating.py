@@ -1,9 +1,9 @@
-import re
 from google.appengine.ext import db
-from models.article import Article
+
 from models.user import User
+from models.article import Article
 from models.reprint import Reprint
-# from models.filing import Filing
+from models.folder import Folder
 
 class Rating(db.Model):
     ## datastore schema
@@ -16,9 +16,10 @@ class Rating(db.Model):
     is_work = db.BooleanProperty(required=True, default=False)
     is_read = db.BooleanProperty(required=True, default=False)
     is_author = db.BooleanProperty(required=True, default=False)
-    reprint = db.ReferenceProperty(Reprint, collection_name='ratings')
     annotation = db.TextProperty()
-    # filings
+    xml = db.TextProperty()
+    reprint = db.ReferenceProperty(Reprint, collection_name='ratings')
+    folder_list = db.ListProperty(db.Key)
     updated_at = db.DateTimeProperty(required=True, auto_now=True)
     created_at = db.DateTimeProperty(required=True, auto_now_add=True)
 
@@ -32,27 +33,37 @@ class Rating(db.Model):
         return rating
 
     ## instance methods
+    def to_hash(self):
+        return { 'id': self.pmid,
+                 'rating': self.rating,
+                 'file': self.is_file,
+                 'favorite': self.is_favorite,
+                 'read': self.is_read,
+                 'work': self.is_work,
+                 'author': self.is_author,
+                 'reprint': self.has_reprint() }
+
+    @property
+    def folders(self):
+        return Folder.get(self.folder_list)
+
     def has_reprint(self):
         return not self.reprint is None
-    has_reprint = property(has_reprint)
 
-    def get_folders(self):
-        return [filing.folder for filing in self.filings]
-    folders = property(get_folders)
-
-    def add_folder(self, folder):
-        from models.filing import Filing
-        filing = Filing.get_or_insert_by_folder_and_rating(folder, self)
-        if filing:
+    def update_rating(self, rating):
+        try:
+            if self.rating == int(rating): raise
+            self.rating = int(rating)
+            self.put()
+            self.article.cache_ratings_stats()
             return True
-        else:
+        except:
             return False
 
-    def remove_folder(self, folder):
-        from models.filing import Filing
-        filing = Filing.get_or_insert_by_folder_and_rating(folder, self)
+    def update_annotation(self, annotation):
         try:
-            filing.delete()
+            self.annotation = db.Text(annotation)
+            self.put()
             return True
         except:
             return False
@@ -60,12 +71,9 @@ class Rating(db.Model):
     def toggle_file(self):
         value = not self.is_file
         self.is_file = value
-        self.put()
-        # delete filings if rating is not file
         if not self.is_file:
-            filings = [filing for filing in self.filings]
-            if filings:
-                db.delete(filings)
+            self.folders = None
+        self.put()
         return self.is_file
 
     def toggle_favorite(self):
@@ -93,14 +101,4 @@ class Rating(db.Model):
         return self.is_author
 
     def delete(self):
-        # cascade delete filings
-        filings = [filing for filing in self.filings]
-        db.delete([self]+filings)
-
-#    def put(self):
-#        # delete filings if rating is not file
-#        key = super(Rating, self).put()
-#        filings = [filing for filing in self.filings]
-#        if filings and not self.is_file:
-#            db.delete(filings)
-#        return key
+        pass
