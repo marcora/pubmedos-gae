@@ -1,4 +1,5 @@
 import logging
+
 import urllib
 import re
 
@@ -51,11 +52,11 @@ class root(Articles):
         if article:
           rating = ratings[i]
           if rating:
-            ret.append({ 'article_id':article.pmid, 'ratings_average_rating':article.ratings_average_rating_cache, 'ratings_count':article.ratings_count_cache, 'rating':rating.rating, 'file':rating.is_file, 'favorite':rating.is_favorite, 'read':rating.is_read, 'work':rating.is_work, 'author':rating.is_author })
+            ret.append({ 'id':article.pmid, 'ratings_average_rating':article.ratings_average_rating_cache, 'ratings_count':article.ratings_count_cache, 'rating':rating.rating, 'file':rating.is_file, 'favorite':rating.is_favorite, 'read':rating.is_read, 'work':rating.is_work, 'author':rating.is_author })
           else:
-            ret.append({ 'article_id':article.pmid, 'ratings_average_rating':article.ratings_average_rating_cache, 'ratings_count':article.ratings_count_cache })
+            ret.append({ 'id':article.pmid, 'ratings_average_rating':article.ratings_average_rating_cache, 'ratings_count':article.ratings_count_cache })
         else:
-          ret.append({ 'article_id': pmids[i] })
+          ret.append({ 'id': pmids[i] })
         i += 1
     self.render_json(ret)
 
@@ -76,7 +77,7 @@ class item(Articles):
         folders = [folder.to_hash() for folder in rating.folders]
       else:
         folders = []
-      self.render_json({ 'article_id': article.pmid,
+      self.render_json({ 'id': article.pmid,
                          'ratings_average_rating': article.ratings_average_rating_cache,
                          'ratings_count': article.ratings_count_cache,
                          'rating': rating.rating,
@@ -85,7 +86,7 @@ class item(Articles):
                          'work': rating.is_work,
                          'read': rating.is_read,
                          'author': rating.is_author,
-                         'reprint': rating.has_reprint,
+                         'reprint': rating.has_reprint(),
                          'annotation': rating.annotation,
                          'annotation_html': annotation_html,
                          'folders': folders,

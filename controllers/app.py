@@ -1,6 +1,7 @@
 import os
-import urllib
 import logging
+
+import urllib
 import mimetypes
 import simplejson as json
 import Cookie

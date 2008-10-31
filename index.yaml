@@ -11,19 +11,6 @@ indexes:
 # your application using appcfg.py.
 
 # Unused in query history -- copied from input.
-- kind: Filing
-  properties:
-  - name: rating
-  - name: folder
-
-# Unused in query history -- copied from input.
-- kind: Filing
-  ancestor: yes
-  properties:
-  - name: folder
-  - name: rating
-
-# Unused in query history -- copied from input.
 - kind: Folder
   properties:
   - name: user
@@ -62,7 +49,7 @@ indexes:
   - name: user
   - name: pmid
 
-# Used once in query history.
+# Unused in query history -- copied from input.
 - kind: Rating
   properties:
   - name: user

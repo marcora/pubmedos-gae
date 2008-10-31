@@ -24,7 +24,7 @@ handlers:
 - url: /(users|articles|folders)(/?|/.*)
   script: controllers/\1.py
 
-- url: /(logout|terms|privacy|help|about)(/?|/.*)
+- url: /(|logout|terms|privacy|help|about)/?
   script: controllers/root.py
 
 - url: /(login|register|activate)(/?|/.*)
