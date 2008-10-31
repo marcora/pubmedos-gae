@@ -50,7 +50,7 @@ class register(Root):
     email = self.request.get('email')
     lastname = self.request.get('lastname')
     forename = self.request.get('forename')
-    suffix = self.request.get('suffix', '')
+    suffix = self.request.get('suffix')
     if username and \
           password_hash and \
           lastname and \
@@ -60,8 +60,8 @@ class register(Root):
       activation_code = uuid.uuid4().urn[9:]
       lastname = lastname.decode('utf-8')
       forename = forename.decode('utf-8')
-      suffix = suffix.decode('utf-8')
-      user = User.get_or_insert_by_username(username, password = password_hash, last_name = last_name, first_name = first_name, middle_name = middle_name, affiliation = affiliation, email = email, activation_code = activation_code)
+      if suffix: suffix = suffix.decode('utf-8')
+      user = User.get_or_insert_by_username(username, password = password_hash, lastname = lastname, forename = forename, suffix = suffix, email = email, activation_code = activation_code)
       if user:
         mail.send_mail(sender= "edoardo.marcora@gmail.com",# "help@pubmedos.appspot.com",
                        to="%s %s <%s>" % (lastname, forename, email),

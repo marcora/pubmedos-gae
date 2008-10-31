@@ -4,9 +4,10 @@ from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
+from models.folder import Folder
+
 from models.article import Article
 from models.rating import Rating
-from models.folder import Folder
 
 from controllers.app import *
 
