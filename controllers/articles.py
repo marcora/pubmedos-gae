@@ -13,7 +13,6 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from models.article import Article
 from models.rating import Rating
 from models.folder import Folder
-from models.filing import Filing
 from models.reprint import Reprint
 
 from controllers.app import *
@@ -35,14 +34,14 @@ def annotation_to_html(annotation):
 
 
 ## actions
-class list(Articles):
+class root(Articles):
   @login_required
   def get(self):
     current_user = self.current_user
     ret = []
     id = self.request.get('id', allow_multiple=True)
     if id:
-      pmids = [pmid for pmid in Set(id)] # remove duplicates
+      pmids = [pmid for pmid in set(id)] # remove duplicates
       article_key_names = ['pmid:'+pmid for pmid in pmids]
       rating_key_names = ['username:'+current_user.username+'|'+'pmid:'+pmid for pmid in pmids]
       articles = Article.get_by_key_name(article_key_names)
@@ -92,7 +91,7 @@ class item(Articles):
                          'folders': folders,
                          })
 
-class update_rating(Articles):
+class item_rating(Articles):
   @login_required
   def post(self, pmid):
     current_user = self.current_user
@@ -114,7 +113,7 @@ class update_rating(Articles):
             'rating': rating.rating,
             })
 
-class update_annotation(Articles):
+class item_annotation(Articles):
   @login_required
   def post(self, pmid):
     current_user = self.current_user
@@ -138,7 +137,7 @@ class update_annotation(Articles):
             'annotation_html': annotation_html,
             })
 
-class reprint(Articles):
+class item_reprint(Articles):
   @login_required
   def get(self, pmid):
     current_user = self.current_user
@@ -176,7 +175,7 @@ class reprint(Articles):
           self.response.headers['Content-Type'] = 'application/pdf'
           self.response.out.write(rating.reprint.filedata);
 
-class toggle_file(Articles):
+class item_file(Articles):
   @login_required
   def post(self, pmid):
     current_user = self.current_user
@@ -187,7 +186,7 @@ class toggle_file(Articles):
     else:
       self.render_json(rating.toggle_file())
 
-class toggle_favorite(Articles):
+class item_favorite(Articles):
   @login_required
   def post(self, pmid):
     current_user = self.current_user
@@ -198,7 +197,7 @@ class toggle_favorite(Articles):
     else:
       self.render_json(rating.toggle_favorite())
 
-class toggle_work(Articles):
+class item_work(Articles):
   @login_required
   def post(self, pmid):
     current_user = self.current_user
@@ -209,7 +208,7 @@ class toggle_work(Articles):
     else:
       self.render_json(rating.toggle_work())
 
-class toggle_read(Articles):
+class item_read(Articles):
   @login_required
   def post(self, pmid):
     current_user = self.current_user
@@ -220,7 +219,7 @@ class toggle_read(Articles):
     else:
       self.render_json(rating.toggle_read())
 
-class toggle_author(Articles):
+class item_author(Articles):
   @login_required
   def post(self, pmid):
     current_user = self.current_user
@@ -231,7 +230,7 @@ class toggle_author(Articles):
     else:
       self.render_json(rating.toggle_author())
 
-class redirect_file(Articles):
+class root_file_redirect(Articles):
   @login_required
   def get(self):
     current_user = self.current_user
@@ -242,7 +241,7 @@ class redirect_file(Articles):
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=File" % (key, urllib.quote_plus(env)))
 
-class redirect_toprated(Articles):
+class root_toprated_redirect(Articles):
   @login_required
   def get(self):
     current_user = self.current_user
@@ -253,7 +252,7 @@ class redirect_toprated(Articles):
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=TopRated" % (key, urllib.quote_plus(env)))
 
-class redirect_favorite(Articles):
+class root_favorite_redirect(Articles):
   @login_required
   def get(self):
     current_user = self.current_user
@@ -264,7 +263,7 @@ class redirect_favorite(Articles):
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Favorite" % (key, urllib.quote_plus(env)))
 
-class redirect_work(Articles):
+class root_work_redirect(Articles):
   @login_required
   def get(self):
     current_user = self.current_user
@@ -275,7 +274,7 @@ class redirect_work(Articles):
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Work" % (key, urllib.quote_plus(env)))
 
-class redirect_read(Articles):
+class root_read_redirect(Articles):
   @login_required
   def get(self):
     current_user = self.current_user
@@ -286,7 +285,7 @@ class redirect_read(Articles):
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Read" % (key, urllib.quote_plus(env)))
 
-class redirect_author(Articles):
+class root_author_redirect(Articles):
   @login_required
   def get(self):
     current_user = self.current_user
@@ -297,7 +296,7 @@ class redirect_author(Articles):
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Author" % (key, urllib.quote_plus(env)))
 
-class ads(Articles):
+class item_sponsored_links(Articles):
   def get(self, pmid):
     article = Article.get_or_insert_by_pmid(pmid)
     if article:
@@ -314,23 +313,23 @@ class ads(Articles):
 
 ## routes
 def main():
-  urls = [('/articles', list),
-          ('/articles/file', redirect_file),
-          ('/articles/toprated', redirect_toprated),
-          ('/articles/favorite', redirect_favorite),
-          ('/articles/work', redirect_work),
-          ('/articles/read', redirect_read),
-          ('/articles/author', redirect_author),
+  urls = [('/articles', root),
+          ('/articles/file/redirect', root_file_redirect),
+          ('/articles/toprated/redirect', root_toprated_redirect),
+          ('/articles/favorite/redirect', root_favorite_redirect),
+          ('/articles/work/redirect', root_work_redirect),
+          ('/articles/read/redirect', root_read_redirect),
+          ('/articles/author/redirect', root_author_redirect),
           ('/articles/(\d+)', item),
-          ('/articles/(\d+)/file', toggle_file),
-          ('/articles/(\d+)/favorite', toggle_favorite),
-          ('/articles/(\d+)/work', toggle_work),
-          ('/articles/(\d+)/read', toggle_read),
-          ('/articles/(\d+)/author', toggle_author),
-          ('/articles/(\d+)/rating', update_rating),
-          ('/articles/(\d+)/annotation', update_annotation),
-          ('/articles/(\d+)/reprint', reprint),
-          ('/articles/(\d+)/ads', ads)]
+          ('/articles/(\d+)/file', item_file),
+          ('/articles/(\d+)/favorite', item_favorite),
+          ('/articles/(\d+)/work', item_work),
+          ('/articles/(\d+)/read', item_read),
+          ('/articles/(\d+)/author', item_author),
+          ('/articles/(\d+)/rating', item_rating),
+          ('/articles/(\d+)/annotation', item_annotation),
+          ('/articles/(\d+)/reprint', item_reprint),
+          ('/articles/(\d+)/sponsored_links', item_sponsored_links)]
   application = webapp.WSGIApplication(urls, debug=True)
   run_wsgi_app(application)
 

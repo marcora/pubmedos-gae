@@ -1,13 +1,8 @@
-# from datetime import datetime
-# import iso8601
 import os
 import logging
 import uuid
-import base64
-import hashlib
 import re
 import Cookie
-from sets import Set
 
 from google.appengine.ext import db
 from google.appengine.ext import webapp
@@ -24,30 +19,6 @@ class Root(RequestHandler):
   pass
 
 ## helpers
-def b64_sha1(s):
-  return base64.standard_b64encode(hashlib.sha1(s).digest())
-
-def unique(list): # Fast and order preserving
-    set = {}
-    return [set.setdefault(e,e) for e in list if e not in set]
-
-def decrypt_password_hash(encrypted_password_hash, username):
-  # keyed Caesar cipher
-  b64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-  key_chars = ''.join(unique(list(b64_sha1(username)+b64_chars)))
-  if len(key_chars) == len(b64_chars):
-    password_hash = [ b64_chars[key_chars.index(encrypted_password_hash[i])] for i in range(0,len(encrypted_password_hash)) ]
-  else:
-    raise
-  return ''.join(password_hash)
-
-def wsse_password_digest(nonce, created, password):
-  # wsse password digest = Base64 (SHA1 (Nonce + Created + Password))
-  s = hashlib.sha1()
-  s.update(nonce)
-  s.update(created)
-  s.update(password)
-  return base64.standard_b64encode(s.digest())
 
 ## actions
 class index(Root):
@@ -68,72 +39,61 @@ class terms(Root):
   def get(self):
     self.render_template()
 
+class privacy(Root):
+  def get(self):
+    self.render_template()
+
 class register(Root):
   def post(self):
     username = self.request.get('username')
     password_hash = self.request.get('password')
     email = self.request.get('email')
-    last_name = self.request.get('last_name')
-    first_name = self.request.get('first_name', '')
-    middle_name = self.request.get('middle_name', '')
-    affiliation = self.request.get('affiliation', '')
+    lastname = self.request.get('lastname')
+    forename = self.request.get('forename')
+    suffix = self.request.get('suffix', '')
     if username and \
           password_hash and \
-          last_name and \
-          first_name and \
+          lastname and \
+          forename and \
           email and \
           re.match('^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$', email):
       activation_code = uuid.uuid4().urn[9:]
-      last_name = last_name.decode('utf-8')
-      first_name = first_name.decode('utf-8')
-      middle_name = middle_name.decode('utf-8')
-      affiliation = affiliation.decode('utf-8')
+      lastname = lastname.decode('utf-8')
+      forename = forename.decode('utf-8')
+      suffix = suffix.decode('utf-8')
       user = User.get_or_insert_by_username(username, password = password_hash, last_name = last_name, first_name = first_name, middle_name = middle_name, affiliation = affiliation, email = email, activation_code = activation_code)
       if user:
-        mail.send_mail(sender="help@pubmedos.appspot.com",
-                       to="%s <%s>" % (last_name, email),
+        mail.send_mail(sender= "edoardo.marcora@gmail.com",# "help@pubmedos.appspot.com",
+                       to="%s %s <%s>" % (lastname, forename, email),
                        subject="Please activate your PubMed On Steroids account",
                        body="""
-Dear %s:
+Dear %s %s:
 
-Your PubMed On Steroids account has been created. In order to activate your account, please visit:
-
-https://pubmedos.appspot.com/activate/%s
-
-Please let us know if you have any problems activating your account or if you have any questions about the registration/activation process.
+Goto <https://pubmedos.appspot.com/activate/%s> to activate your PubMed On Steroids account!
 
 The PubMed On Steroids Team :)
-""" % (last_name, activation_code))
-        logging.info(activation_code)
+""" % (lastname, forename, activation_code))
       else:
-        self.error(404)
+        self.error(403)
     else:
-      self.error(404)
+      self.error(403)
 
 class activate(Root):
   def get(self, activation_code):
-    user = User.gql("WHERE activation_code = :1",
-                    activation_code).get()
+    user = User.gql("WHERE activation_code = :1", activation_code).get()
     if user:
       user.activation_code = None
       user.put()
-      self.success = True
+      self.redirect('http://www.pubmed.gov/')
     else:
-      self.success = False
-    self.render_template()
+      self.error(403)
 
 class login(Root):
-  def get(self):
+  def post(self):
     try:
-##      authentication = os.environ['HTTP_AUTHORIZATION']
-##      (meth, auth) = authentication.split(' ', 1)
-##      if meth.lower() != 'basic':
-##        raise
-##      auth = auth.strip().decode('base64')
-##      username, password = auth.split(':', 1)
       username = self.request.get('username')
       password = self.request.get('password')
-      user = User.get_by_key_name('username:'+username)
+      user = User.get_by_username(username)
       if user:
         if user.activation_code:
           self.render_json('activate')
@@ -157,8 +117,6 @@ class login(Root):
       else:
         self.render_json('register')
     except:
-      ## self.response.headers['WWW-Authenticate'] = 'Basic realm="pubmedos"'
-      ## self.response.set_status(401)
       self.render_json('authenticate')
 
 class logout(Root):
@@ -174,6 +132,7 @@ class logout(Root):
 def main():
   urls = [('/', index),
           ('/terms', terms),
+          ('/privacy', about),
           ('/help', help),
           ('/about', about),
           ('/register', register),

@@ -7,6 +7,7 @@ import Cookie
 
 from google.appengine.api import memcache
 from google.appengine.ext import webapp
+
 from mako.lookup import TemplateLookup
 from mako.template import Template
 
@@ -59,7 +60,7 @@ class RequestHandler(webapp.RequestHandler):
     ext = mimetypes.guess_extension(format)
     if ext:
       self.response.headers["Content-Type"] = format
-      self.response.out.write(str(text))
+      self.response.out.write(unicode(text))
     else:
       raise
 
@@ -76,5 +77,5 @@ class RequestHandler(webapp.RequestHandler):
             username = un_ra[0]
             remote_addr = un_ra[1]
             if username and self.request.remote_addr == remote_addr:
-              user = User.get_by_key_name('username:'+username)
+              user = User.get_by_username(username)
     return user

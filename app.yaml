@@ -24,16 +24,12 @@ handlers:
 - url: /(users|articles|folders)(/?|/.*)
   script: controllers/\1.py
 
-- url: /(logout|terms|help|about)(/?|/.*)
+- url: /(logout|terms|privacy|help|about)(/?|/.*)
   script: controllers/root.py
 
 - url: /(login|register|activate)(/?|/.*)
   script: controllers/root.py
   secure: always
-
-- url: /admin/.*
-  script: $PYTHON_LIB/google/appengine/ext/admin
-  login: admin
 
 - url: /.*
   script: not_found.py

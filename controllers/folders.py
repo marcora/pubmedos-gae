@@ -9,7 +9,6 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
 from models.folder import Folder
-from models.filing import Filing
 
 from controllers.app import *
 
@@ -18,7 +17,7 @@ class Folders(RequestHandler):
   pass
 
 ## actions
-class list(Folders):
+class root(Folders):
   def get(self): # index
     current_user = self.get_current_user()
     if current_user:
@@ -90,7 +89,7 @@ class item(Folders):
     else:
       self.error(401)
 
-class dialog(Folders):
+class root_dialog(Folders):
   def get(self):
     current_user = self.get_current_user()
     if current_user:
@@ -101,9 +100,9 @@ class dialog(Folders):
 
 ## routes
 def main():
-  urls = [('/folders', list),
+  urls = [('/folders', root),
           ('/folders/(\d+)', item),
-          ('/folders/dialog', dialog)]
+          ('/folders/dialog', root_dialog)]
   application = webapp.WSGIApplication(urls, debug=True)
   run_wsgi_app(application)
 
