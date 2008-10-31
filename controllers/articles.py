@@ -279,38 +279,6 @@ class root_author_redirect(Articles):
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Author" % (key, urllib.quote_plus(env)))
 
-class item_add_folder(Articles):
-  @login_required
-  def post(self, pmid):
-    current_user = self.current_user
-    article = Article.get_or_insert_by_pmid(pmid)
-    rating = Rating.get_or_insert_by_user_and_article(current_user, article)
-    folder_id = self.request.get('id')
-    if not (article and rating and folder_id):
-      self.error(404)
-    else:
-      folder = Folder.get_by_id(int(folder_id), parent=current_user)
-      if folder:
-        self.json(folder.add_rating(rating))
-      else:
-        self.error(400)
-
-class item_del_folder(Articles):
-  @login_required
-  def post(self, pmid):
-    current_user = self.current_user
-    article = Article.get_or_insert_by_pmid(pmid)
-    rating = Rating.get_or_insert_by_user_and_article(current_user, article)
-    folder_id = self.request.get('id')
-    if not (article and rating and folder_id):
-      self.error(404)
-    else:
-      folder = Folder.get_by_id(int(folder_id), parent=current_user)
-      if folder:
-        self.json(folder.del_rating(rating))
-      else:
-        self.error(400)
-
 class item_xml(Articles):
   @login_required
   def get(self, pmid):

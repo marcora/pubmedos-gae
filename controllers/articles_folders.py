@@ -5,7 +5,6 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
 from models.folder import Folder
-
 from models.article import Article
 from models.rating import Rating
 
@@ -22,67 +21,24 @@ class root(ArticlesFolders):
     current_user = self.current_user
     article = Article.get_or_insert_by_pmid(pmid)
     rating = Rating.get_or_insert_by_user_and_article(current_user, article)
-    if article and rating:
-      selected = self.request.get('selected')
+    if not (article and rating):
+      self.error(404)
+    else:
+      selected = self.request.get('selection')
       if selected:
-        selected_folders = [str(folder.key()) for folder in rating.folders]
         folders = []
         for folder in current_user.folders.order('title'):
-          if str(folder.key()) in selected_folders:
-            hash = folder.to_hash()
-            hash['is_selected'] = True
-            folders.append(hash)
+          if folder.key() in rating.folder_list:
+            record = folder.to_hash()
+            record.update({ 'selected': True })
+            folders.append(record)
           else:
-            hash = folder.to_hash()
-            hash['is_selected'] = False
-            folders.append(hash)
+            record = folder.to_hash()
+            record.update({ 'selected': False })
+            folders.append(record)
       else:
         folders = [folder.to_hash() for folder in rating.folders]
       self.json(folders)
-    else:
-      self.error(404)
-
-  @login_required
-  def post(self, pmid): # add article to folder
-    current_user = self.current_user
-    article = Article.get_or_insert_by_pmid(pmid)
-    rating = Rating.get_or_insert_by_user_and_article(current_user, article)
-    if article and rating:
-      title = self.request.get('title')
-      if title:
-        title = title.decode('utf-8')
-        folder = Folder.get_or_insert_by_user_and_title(current_user, title)
-        if folder:
-          rating.add_folder(folder)
-      else:
-        self.error(404)
-    else:
-      self.error(404)
-
-class item(ArticlesFolders):
-  @login_required
-  def post(self, pmid, id): # add article to folder
-    current_user = self.current_user
-    article = Article.get_or_insert_by_pmid(pmid)
-    rating = Rating.get_or_insert_by_user_and_article(current_user, article)
-    if article and rating:
-      folder = Folder.get_by_id(int(id), parent=current_user)
-      if folder:
-        rating.add_folder(folder)
-    else:
-      self.error(404)
-
-  @login_required
-  def delete(self, pmid, id): # remove article from folder
-    current_user = self.current_user
-    article = Article.get_or_insert_by_pmid(pmid)
-    rating = Rating.get_or_insert_by_user_and_article(current_user, article)
-    if article and rating:
-      folder = Folder.get_by_id(int(id), parent=current_user)
-      if folder:
-        rating.remove_folder(folder)
-    else:
-      self.error(404)
 
 class root_dialog(ArticlesFolders):
   @login_required
@@ -95,6 +51,36 @@ class root_dialog(ArticlesFolders):
       self.template()
     else:
       self.error(404)
+
+class item(ArticlesFolders):
+  @login_required
+  def post(self, pmid, folder_id):
+    current_user = self.current_user
+    article = Article.get_or_insert_by_pmid(pmid)
+    rating = Rating.get_or_insert_by_user_and_article(current_user, article)
+    if not (article and rating):
+      self.error(404)
+    else:
+      folder = Folder.get_by_id(int(folder_id), parent=current_user)
+      if folder:
+        self.json(folder.add_rating(rating))
+      else:
+        self.error(400)
+
+  @login_required
+  def delete(self, pmid, folder_id):
+    current_user = self.current_user
+    article = Article.get_or_insert_by_pmid(pmid)
+    rating = Rating.get_or_insert_by_user_and_article(current_user, article)
+    if not (article and rating):
+      self.error(404)
+    else:
+      folder = Folder.get_by_id(int(folder_id), parent=current_user)
+      if folder:
+        self.json(folder.del_rating(rating))
+      else:
+        self.error(400)
+
 
 ## routes
 def main():

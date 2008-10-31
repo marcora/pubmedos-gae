@@ -24,11 +24,11 @@ $(document).ready(function(){
         $.ajax({
             type: 'GET',
             url: '/articles/${ pmid }/folders',
-            data: { 'selected': true },
+            data: { 'selection': true },
             success: function(folders) {
                 $('#folder_list').empty();
                 $.each(folders, function(index, folder) {
-                    if (folder.is_selected) {
+                    if (folder.selected) {
                         $('#folder_list').append('<li class="folder" id="folder_'+folder.id+'" title="Click to remove article ${ pmid } from this folder"><img src="/images/folder.png" />&nbsp;<span><a class="selected" href="#" id="folder_'+folder.id+'_title">'+folder.title+'</a>&nbsp;<span class="folder_cmds" id="folder_'+folder.id+'_cmds"/></span></li>');
                     } else {
                         $('#folder_list').append('<li class="folder" id="folder_'+folder.id+'" title="Click to add article ${ pmid } to this folder"><img src="/images/folder.png" />&nbsp;<span><a href="#" id="folder_'+folder.id+'_title">'+folder.title+'</a>&nbsp;<span class="folder_cmds" id="folder_'+folder.id+'_cmds"/></span></li>');
