@@ -19,85 +19,73 @@ class Folders(RequestHandler):
 
 ## actions
 class root(Folders):
+  @login_required
   def get(self): # index
-    current_user = self.get_current_user()
-    if current_user:
-      self.render_json([folder.to_hash() for folder in current_user.folders.order('title')])
-    else:
-      self.error(401)
+    current_user = self.current_user()
+    self.json([folder.to_hash() for folder in current_user.folders.order('title')])
 
+  @login_required
   def post(self): # create
-    current_user = self.get_current_user()
-    if current_user:
-      title = self.request.get('title')
-      if title:
-        title = title.decode('utf-8')
-        folder = Folder.get_or_insert_by_user_and_title(current_user, title)
-        if folder:
-          self.render_json([folder.to_hash() for folder in current_user.folders.order('title')])
-        else:
-          self.error(404)
+    current_user = self.current_user()
+    title = self.request.get('title')
+    if title:
+      title = title.decode('utf-8')
+      folder = Folder.get_or_insert_by_user_and_title(current_user, title)
+      if folder:
+        self.json([folder.to_hash() for folder in current_user.folders.order('title')])
       else:
         self.error(404)
     else:
-      self.error(401)
+      self.error(404)
 
 class item(Folders):
+  @login_required
   def get(self, id): # show
-    current_user = self.get_current_user()
-    if current_user:
-      folder = Folder.get_by_id(int(id), parent=current_user)
+    current_user = self.current_user()
+    folder = Folder.get_by_id(int(id), parent=current_user)
+    if folder:
+      env, key = epost(ids=[rating.pmid for rating in folder.ratings])
+      if env and key:
+        self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Folder_%s" % (key, urllib.quote_plus(env), urllib.quote_plus(base64.standard_b64encode(folder.title.encode('utf-8')))))
+      else:
+        self.error(404)
+    else:
+      self.error(404)
+
+  @login_required
+  def post(self, id): # update
+    current_user = self.current_user()
+    title = self.request.get('title')
+    if title:
+      title = title.decode('utf-8')
+      folder = Folder.get_by_user_and_title(current_user, title)
       if folder:
-        env, key = epost(ids=[rating.pmid for rating in folder.ratings])
-        if env and key:
-          self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Folder_%s" % (key, urllib.quote_plus(env), urllib.quote_plus(base64.standard_b64encode(folder.title.encode('utf-8')))))
+        self.error(400)
+      else:
+        folder = Folder.get_by_id(int(id), parent=current_user)
+        if folder:
+          folder.title = title
+          folder.put()
         else:
           self.error(404)
-      else:
-        self.error(404)
     else:
-      self.error(401)
+      self.error(400)
 
-  def post(self, id): # update
-    current_user = self.get_current_user()
-    if current_user:
-      title = self.request.get('title')
-      if title:
-        title = title.decode('utf-8')
-        folder = Folder.get_by_user_and_title(current_user, title)
-        if folder:
-          self.error(400)
-        else:
-          folder = Folder.get_by_id(int(id), parent=current_user)
-          if folder:
-            folder.title = title
-            folder.put()
-          else:
-            self.error(404)
-      else:
-        self.error(400)
-    else:
-      self.error(401)
-
+  @login_required
   def delete(self, id): # destroy
-    current_user = self.get_current_user()
-    if current_user:
-      folder = Folder.get_by_id(int(id), parent=current_user)
-      if folder:
-        folder.delete()
-      else:
-        self.error(404)
+    current_user = self.current_user()
+    folder = Folder.get_by_id(int(id), parent=current_user)
+    if folder:
+      folder.delete()
     else:
-      self.error(401)
+      self.error(404)
 
 class root_dialog(Folders):
+  @login_required
   def get(self):
-    current_user = self.get_current_user()
-    if current_user:
-      self.folders = current_user.folders.order('title')
-      self.render_template()
-    else:
-      self.error(401)
+    current_user = self.current_user()
+    self.folders = current_user.folders.order('title')
+    self.template()
 
 ## routes
 def main():

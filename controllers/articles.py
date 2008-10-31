@@ -1,18 +1,13 @@
-import logging
+import logging, urllib
 
-import urllib
-import re
-
-from sets import Set
 from ncbi.eutils import epost
 from postmarkup import postmarkup
 
-from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-from models.folder import Folder
 from models.reprint import Reprint
+from models.folder import Folder
 from models.article import Article
 from models.rating import Rating
 
@@ -25,21 +20,20 @@ class Articles(RequestHandler):
 ## helpers
 def annotation_to_html(annotation):
   annotation_markup = postmarkup.create(use_pygments=False)
-  annotation_markup.add_tag(u'pmid',
+  annotation_markup.add_tag(u'pubmed',
                             postmarkup.SearchTag,
-                            u'pmid',
+                            u'pubmed',
                             u"http://www.ncbi.nlm.nih.gov/pubmed/%s", u'pubmed.gov')
   annotation_markup.add_tag(u'sub', postmarkup.SimpleTag, u'sub', u'sub')
   annotation_markup.add_tag(u'sup', postmarkup.SimpleTag, u'sup', u'sup')
-  return annotation_markup(annotation) #return textile.textile(annotation.encode('utf-8'), head_offset=3, sanitize=1, encoding='utf-8', output='utf-8')
-
+  return annotation_markup(annotation)
 
 ## actions
 class root(Articles):
   @login_required
   def get(self):
     current_user = self.current_user
-    ret = []
+    records = []
     id = self.request.get('id', allow_multiple=True)
     if id:
       pmids = [pmid for pmid in set(id)] # remove duplicates
@@ -52,13 +46,15 @@ class root(Articles):
         if article:
           rating = ratings[i]
           if rating:
-            ret.append({ 'id':article.pmid, 'ratings_average_rating':article.ratings_average_rating_cache, 'ratings_count':article.ratings_count_cache, 'rating':rating.rating, 'file':rating.is_file, 'favorite':rating.is_favorite, 'read':rating.is_read, 'work':rating.is_work, 'author':rating.is_author })
+            record = article.to_hash()
+            record.update(rating.to_hash())
+            records.append(record)
           else:
-            ret.append({ 'id':article.pmid, 'ratings_average_rating':article.ratings_average_rating_cache, 'ratings_count':article.ratings_count_cache })
+            records.append(article.to_hash)
         else:
-          ret.append({ 'id': pmids[i] })
+          records.append({ 'id': pmids[i] })
         i += 1
-    self.render_json(ret)
+    self.json(records)
 
 class item(Articles):
   @login_required
@@ -77,20 +73,10 @@ class item(Articles):
         folders = [folder.to_hash() for folder in rating.folders]
       else:
         folders = []
-      self.render_json({ 'id': article.pmid,
-                         'ratings_average_rating': article.ratings_average_rating_cache,
-                         'ratings_count': article.ratings_count_cache,
-                         'rating': rating.rating,
-                         'file': rating.is_file,
-                         'favorite': rating.is_favorite,
-                         'work': rating.is_work,
-                         'read': rating.is_read,
-                         'author': rating.is_author,
-                         'reprint': rating.has_reprint(),
-                         'annotation': rating.annotation,
-                         'annotation_html': annotation_html,
-                         'folders': folders,
-                         })
+      record = article.to_hash()
+      record.update(rating.to_hash())
+      record.update({ 'folders': folders })
+      self.json(record)
 
 class item_rating(Articles):
   @login_required
@@ -101,14 +87,13 @@ class item_rating(Articles):
     if not (article and rating):
       self.error(404)
     else:
-      value = self.request.get('rating')
+      value = self.request.get('value')
       if not (value and range(-1,6).count(int(value))):
         self.error(400)
       else:
         rating.rating = int(value)
         rating.put()
-        article.set_ratings_stats()
-        self.render_json({
+        self.json({
             'ratings_average_rating': article.ratings_average_rating_cache,
             'ratings_count': article.ratings_count_cache,
             'rating': rating.rating,
@@ -123,7 +108,7 @@ class item_annotation(Articles):
     if not (article and rating):
       self.error(404)
     else:
-      value = self.request.get('annotation')
+      value = self.request.get('value')
       if not value:
         self.error(400)
       else:
@@ -133,7 +118,7 @@ class item_annotation(Articles):
           annotation_html = annotation_to_html(rating.annotation)
         else:
           annotation_html = '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
-        self.render_json({
+        self.json({
             'annotation': rating.annotation,
             'annotation_html': annotation_html,
             })
@@ -144,7 +129,7 @@ class item_reprint(Articles):
     current_user = self.current_user
     article = Article.get_or_insert_by_pmid(pmid)
     rating = Rating.get_or_insert_by_user_and_article(current_user, article)
-    if not (article and rating and rating.has_reprint):
+    if not (article and rating and rating.has_reprint()):
       self.error(404)
     else:
       self.response.headers['Content-Type'] = 'application/pdf'
@@ -162,7 +147,7 @@ class item_reprint(Articles):
       # check size and if pdf
       max_filesize = 10*1048576; # 10 megabytes
       if not (re.compile('^%PDF-1\.\d{1}').match(filedata) and (len(filedata) <= max_filesize)):
-        self.error(400)
+        self.error(403)
       else:
         reprint = Reprint.get_or_insert_by_filedata(filedata)
         if not reprint:
@@ -170,11 +155,8 @@ class item_reprint(Articles):
         else:
           rating.reprint = reprint
           rating.put()
-        if not rating.has_reprint:
+        if not rating.has_reprint():
           self.error(400)
-        else:
-          self.response.headers['Content-Type'] = 'application/pdf'
-          self.response.out.write(rating.reprint.filedata);
 
 class item_file(Articles):
   @login_required
@@ -185,7 +167,7 @@ class item_file(Articles):
     if not (article and rating):
       self.error(404)
     else:
-      self.render_json(rating.toggle_file())
+      self.json(rating.toggle_file())
 
 class item_favorite(Articles):
   @login_required
@@ -196,7 +178,7 @@ class item_favorite(Articles):
     if not (article and rating):
       self.error(404)
     else:
-      self.render_json(rating.toggle_favorite())
+      self.json(rating.toggle_favorite())
 
 class item_work(Articles):
   @login_required
@@ -207,7 +189,7 @@ class item_work(Articles):
     if not (article and rating):
       self.error(404)
     else:
-      self.render_json(rating.toggle_work())
+      self.json(rating.toggle_work())
 
 class item_read(Articles):
   @login_required
@@ -218,7 +200,7 @@ class item_read(Articles):
     if not (article and rating):
       self.error(404)
     else:
-      self.render_json(rating.toggle_read())
+      self.json(rating.toggle_read())
 
 class item_author(Articles):
   @login_required
@@ -229,7 +211,7 @@ class item_author(Articles):
     if not (article and rating):
       self.error(404)
     else:
-      self.render_json(rating.toggle_author())
+      self.json(rating.toggle_author())
 
 class root_file_redirect(Articles):
   @login_required
@@ -297,6 +279,50 @@ class root_author_redirect(Articles):
     else:
       self.redirect("http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&Cmd=DetailsSearch&term=%%23%s&WebEnv=%s&WebEnvRq=1&CmdTab=Author" % (key, urllib.quote_plus(env)))
 
+class item_add_folder(Articles):
+  @login_required
+  def post(self, pmid):
+    current_user = self.current_user
+    article = Article.get_or_insert_by_pmid(pmid)
+    rating = Rating.get_or_insert_by_user_and_article(current_user, article)
+    folder_id = self.request.get('id')
+    if not (article and rating and folder_id):
+      self.error(404)
+    else:
+      folder = Folder.get_by_id(int(folder_id), parent=current_user)
+      if folder:
+        self.json(folder.add_rating(rating))
+      else:
+        self.error(400)
+
+class item_del_folder(Articles):
+  @login_required
+  def post(self, pmid):
+    current_user = self.current_user
+    article = Article.get_or_insert_by_pmid(pmid)
+    rating = Rating.get_or_insert_by_user_and_article(current_user, article)
+    folder_id = self.request.get('id')
+    if not (article and rating and folder_id):
+      self.error(404)
+    else:
+      folder = Folder.get_by_id(int(folder_id), parent=current_user)
+      if folder:
+        self.json(folder.del_rating(rating))
+      else:
+        self.error(400)
+
+class item_xml(Articles):
+  @login_required
+  def get(self, pmid):
+    current_user = self.current_user
+    article = Article.get_or_insert_by_pmid(pmid)
+    rating = Rating.get_or_insert_by_user_and_article(current_user, article)
+    if not (article and rating):
+      self.error(404)
+    else:
+      content = rating.xml or article.xml
+      self.xml(content)
+
 class item_sponsored_links(Articles):
   def get(self, pmid):
     article = Article.get_or_insert_by_pmid(pmid)
@@ -308,7 +334,7 @@ class item_sponsored_links(Articles):
       self.source = record['source']
       self.abstract = record['abstract']
       self.keywords = record['keywords']
-      self.render_template()
+      self.template()
     else:
       self.error(404)
 

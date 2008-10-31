@@ -28,7 +28,20 @@ def url(*segments, **vars):
 
 def login_required(request_handler):
   def wrapper(self, *args, **kwargs):
-    self.current_user = self.get_current_user()
+    user = None
+    cookie = Cookie.SimpleCookie(self.request.headers.get('Cookie'))
+    if cookie.has_key('pubmedos_sid'):
+      sid = cookie['pubmedos_sid'].value
+      if sid:
+        m = memcache.get(sid)
+        if m:
+          un_ra = m.split('|')
+          if len(un_ra) > 1:
+            username = un_ra[0]
+            remote_addr = un_ra[1]
+            if username and self.request.remote_addr == remote_addr:
+              user = User.get_by_username(username)
+    self.current_user = user
     if not self.current_user:
       self.error(401)
     else:
@@ -38,7 +51,7 @@ def login_required(request_handler):
 ## base request handler
 class RequestHandler(webapp.RequestHandler):
 
-  def render_json(self, content):
+  def json(self, content):
     self.response.headers['Content-Type'] = 'text/javascript'
     cb = self.request.get('callback')
     if cb:
@@ -46,7 +59,7 @@ class RequestHandler(webapp.RequestHandler):
     else:
       self.response.out.write(json.dumps(content))
 
-  def render_template(self, format='text/html'):
+  def template(self, format='text/html'):
     ext = mimetypes.guess_extension(format)
     if ext:
       template_name = self.__class__.__bases__[0].__name__.lower() + '/' + self.__class__.__name__.lower() + ext
@@ -57,7 +70,7 @@ class RequestHandler(webapp.RequestHandler):
     else:
       raise
 
-  def render_text(self, text, format='text/plain'):
+  def text(self, text, format='text/plain'):
     ext = mimetypes.guess_extension(format)
     if ext:
       self.response.headers["Content-Type"] = format
@@ -65,18 +78,10 @@ class RequestHandler(webapp.RequestHandler):
     else:
       raise
 
-  def get_current_user(self):
-    user = None
-    cookie = Cookie.SimpleCookie(self.request.headers.get('Cookie'))
-    if cookie.has_key('sid'):
-      sid = cookie['sid'].value
-      if sid:
-        m = memcache.get(sid)
-        if m:
-          un_ra = m.split('|')
-          if len(un_ra) > 1:
-            username = un_ra[0]
-            remote_addr = un_ra[1]
-            if username and self.request.remote_addr == remote_addr:
-              user = User.get_by_username(username)
-    return user
+  def xml(self, xml, format='text/xml'):
+    ext = mimetypes.guess_extension(format)
+    if ext:
+      self.response.headers["Content-Type"] = format
+      self.response.out.write(unicode(xml))
+    else:
+      raise

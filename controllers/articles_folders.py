@@ -38,7 +38,7 @@ class root(ArticlesFolders):
               folders.append(hash)
         else:
           folders = [folder.to_hash() for folder in rating.folders]
-        self.render_json(folders)
+        self.json(folders)
       else:
         self.error(404)
     else:
@@ -100,7 +100,7 @@ class root_dialog(ArticlesFolders):
       rating = Rating.get_or_insert_by_user_and_article(current_user, article)
       if article and rating:
         self.pmid = pmid
-        self.render_template()
+        self.template()
       else:
         self.error(404)
     else:

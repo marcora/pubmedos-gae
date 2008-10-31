@@ -24,24 +24,24 @@ class Root(RequestHandler):
 class index(Root):
   def get(self):
 #    self.title = 'Home'
-#    self.render_template()
-    self.render_text('root - index')
+#    self.template()
+    self.text('root - index')
 
 class help(Root):
   def get(self):
-    self.render_template()
+    self.template()
 
 class about(Root):
   def get(self):
-    self.render_template()
+    self.template()
 
 class terms(Root):
   def get(self):
-    self.render_template()
+    self.template()
 
 class privacy(Root):
   def get(self):
-    self.render_template()
+    self.template()
 
 class register(Root):
   def post(self):
@@ -96,37 +96,37 @@ class login(Root):
       user = User.get_by_username(username)
       if user:
         if user.activation_code:
-          self.render_json('activate')
+          self.json('activate')
         else:
           if password == user.password:
             cookie = Cookie.SimpleCookie(self.request.headers.get('Cookie'))
-            if cookie.has_key('sid'):
-              sid = cookie['sid'].value
+            if cookie.has_key('pubmedos_sid'):
+              sid = cookie['pubmedos_sid'].value
               if sid:
                 memcache.delete(sid)
             sid = str(uuid.uuid4())
             timeout = 60*60 # 1 hour timeout
-            cookie['sid'] = sid
-            cookie['sid']['max-age'] = timeout
+            cookie['pubmedos_sid'] = sid
+            cookie['pubmedos_sid']['max-age'] = timeout
             # store username and http_referrer in session id
             memcache.set(sid, user.username + '|' + self.request.remote_addr, timeout+60) # set memcache to last 1 min longer than cookie to ensure memcache exists when cookie does!
             self.response.headers['Set-Cookie'] = cookie.output(header='')
-            self.render_json('authenticated')
+            self.json('authenticated')
           else:
             raise
       else:
-        self.render_json('register')
+        self.json('register')
     except:
-      self.render_json('authenticate')
+      self.json('authenticate')
 
 class logout(Root):
   def get(self):
     cookie = Cookie.SimpleCookie(self.request.headers.get('Cookie'))
-    if cookie.has_key('sid'):
-      sid = cookie['sid'].value
+    if cookie.has_key('pubmedos_sid'):
+      sid = cookie['pubmedos_sid'].value
       if sid:
         memcache.delete(sid)
-    self.response.headers['Set-Cookie'] = 'sid=; expires=Sat, 29-Mar-1969 00:00:00 GMT;'
+    self.response.headers['Set-Cookie'] = 'pubmedos_sid=; expires=Sat, 29-Mar-1969 00:00:00 GMT;'
 
 ## routes
 def main():

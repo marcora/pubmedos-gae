@@ -21,7 +21,7 @@ class item(Users):
       self.current_user = self.get_current_user()
       self.username = username
       self.user = User.get_by_username(username)
-      self.render_template()
+      self.template()
     else:
       self.error(404)
 
