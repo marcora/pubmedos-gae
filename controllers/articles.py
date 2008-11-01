@@ -3,6 +3,7 @@ import logging, urllib, re
 from ncbi.eutils import epost
 from postmarkup import postmarkup
 
+from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
@@ -67,7 +68,6 @@ class item(Articles):
     else:
       record = article.to_hash()
       record.update(rating.to_hash_plus())
-      record.update({ 'folders': folders })
       self.json(record)
 
 class item_rating(Articles):
@@ -83,8 +83,7 @@ class item_rating(Articles):
       if not (value and range(-1,6).count(int(value))):
         self.error(400)
       else:
-        rating.rating = int(value)
-        rating.put()
+        rating.update_rating(value)
         self.json({
             'ratings_average_rating': article.ratings_average_rating_cache,
             'ratings_count': article.ratings_count_cache,
@@ -104,8 +103,7 @@ class item_annotation(Articles):
       if not value:
         self.error(400)
       else:
-        rating.annotation = db.Text(value.decode('utf-8'))
-        rating.put()
+        rating.update_annotation(value)
         if rating.annotation:
           annotation_html = annotation_to_html(rating.annotation)
         else:

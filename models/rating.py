@@ -83,7 +83,7 @@ class Rating(db.Model):
 
     def update_annotation(self, annotation):
         try:
-            self.annotation = db.Text(annotation)
+            self.annotation = db.Text(annotation, 'utf-8')
             self.put()
             return True
         except:
