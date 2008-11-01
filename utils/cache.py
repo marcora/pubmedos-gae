@@ -41,7 +41,7 @@ CLEAN_CHECK_PERCENT = 15 # 15% of all requests will clean the database
 MAX_HITS_TO_CLEAN = 1000 # the maximum number of cache hits to clean on attempt
 
 
-class _AppEngineUtilities_Cache(db.Model):
+class _Cache(db.Model):
     # It's up to the application to determine the format of their keys
     cachekey = db.StringProperty()
     createTime = db.DateTimeProperty(auto_now_add=True)
@@ -87,7 +87,7 @@ class Cache(object):
         items that are old. This helps keep the size of your over all
         datastore down.
         """
-        query = _AppEngineUtilities_Cache.all()
+        query = _Cache.all()
         query.filter('timeout < ', datetime.datetime.now())
         results = query.fetch(self.max_hits_to_clean)
         db.delete(results)
@@ -128,7 +128,7 @@ class Cache(object):
         if key in self:
             raise KeyError
 
-        cacheEntry = _AppEngineUtilities_Cache()
+        cacheEntry = _Cache()
         cacheEntry.cachekey = key
         cacheEntry.value = pickle.dumps(value)
         cacheEntry.timeout = timeout
@@ -152,7 +152,7 @@ class Cache(object):
 
         cacheEntry = self._read(key)
         if not cacheEntry:
-            cacheEntry = _AppEngineUtilities_Cache()
+            cacheEntry = _Cache()
             cacheEntry.cachekey = key
         cacheEntry.value = pickle.dumps(value)
         cacheEntry.timeout = timeout
@@ -173,7 +173,7 @@ class Cache(object):
         best candidate for use. The special method __getitem__ is the
         preferred access method for cache data.
         """
-        query = _AppEngineUtilities_Cache.all()
+        query = _Cache.all()
         query.filter('cachekey', key)
         query.filter('timeout > ', datetime.datetime.now())
         results = query.fetch(1)
