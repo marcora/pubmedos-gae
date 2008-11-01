@@ -82,12 +82,12 @@ class Rating(db.Model):
             return False
 
     def update_annotation(self, annotation):
-#        try:
-            self.annotation = db.Text(annotation, 'utf-8')
+        try:
+            self.annotation = db.Text(annotation)
             self.put()
             return True
-#        except:
-#            return False
+        except:
+            return False
 
     def toggle_file(self):
         value = not self.is_file

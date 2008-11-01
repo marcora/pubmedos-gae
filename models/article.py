@@ -28,7 +28,7 @@ class Article(db.Model):
             if res.status_code == 200:
                 xml = fromstring(res.content)
                 if xml.findtext('.//MedlineCitation/PMID') == str(pmid):
-                    xml = db.Text(res.content, encoding='utf-8')
+                    xml = db.Text(res.content)
                     article = Article.get_or_insert(key_name = key_name, pmid = pmid, xml = xml, fetched_at = datetime.utcnow())
         return article
 
