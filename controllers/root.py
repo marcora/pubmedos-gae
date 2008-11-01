@@ -89,7 +89,7 @@ class activate(Root):
       self.error(403)
 
 class login(Root):
-  def get(self):
+  def post(self):
     try:
       username = self.request.get('username')
       password = self.request.get('password')

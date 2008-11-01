@@ -10,102 +10,20 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Unused in query history -- copied from input.
+# Used 20 times in query history.
 - kind: Folder
   properties:
   - name: user
   - name: title
 
-# Unused in query history -- copied from input.
-- kind: Folder
-  ancestor: yes
-  properties:
-  - name: sup_folder
-  - name: title
-  - name: user
-
-# Unused in query history -- copied from input.
-- kind: Folder
-  ancestor: yes
-  properties:
-  - name: title
-  - name: user
-
-# Unused in query history -- copied from input.
+# Used once in query history.
 - kind: Rating
   properties:
   - name: article
   - name: rating
 
-# Unused in query history -- copied from input.
-- kind: Rating
-  properties:
-  - name: article
-  - name: user
-
-# Unused in query history -- copied from input.
-- kind: Rating
-  properties:
-  - name: user
-  - name: pmid
-
-# Unused in query history -- copied from input.
-- kind: Rating
-  properties:
-  - name: user
-  - name: pmid
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Rating
-  ancestor: yes
-  properties:
-  - name: favorite
-
-# Unused in query history -- copied from input.
-- kind: Rating
-  ancestor: yes
-  properties:
-  - name: file
-
-# Unused in query history -- copied from input.
-- kind: Rating
-  ancestor: yes
-  properties:
-  - name: is_favorite
-
-# Unused in query history -- copied from input.
-- kind: Rating
-  ancestor: yes
-  properties:
-  - name: is_file
-
-# Unused in query history -- copied from input.
-- kind: Rating
-  ancestor: yes
-  properties:
-  - name: is_read
-
-# Unused in query history -- copied from input.
-- kind: Rating
-  ancestor: yes
-  properties:
-  - name: is_work
-
-# Unused in query history -- copied from input.
+# Used once in query history.
 - kind: Rating
   ancestor: yes
   properties:
   - name: rating
-
-# Unused in query history -- copied from input.
-- kind: Rating
-  ancestor: yes
-  properties:
-  - name: read
-
-# Unused in query history -- copied from input.
-- kind: Rating
-  ancestor: yes
-  properties:
-  - name: work
