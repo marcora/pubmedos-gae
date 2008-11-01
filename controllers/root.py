@@ -89,7 +89,7 @@ class activate(Root):
       self.error(403)
 
 class login(Root):
-  def post(self):
+  def get(self):
     try:
       username = self.request.get('username')
       password = self.request.get('password')
@@ -99,17 +99,14 @@ class login(Root):
           self.json('activate')
         else:
           if password == user.password:
+            sid = None
             cookie = Cookie.SimpleCookie(self.request.headers.get('Cookie'))
             if cookie.has_key('pubmedos_sid'):
               sid = cookie['pubmedos_sid'].value
-              if sid:
-                memcache.delete(sid)
-            sid = str(uuid.uuid4())
-            timeout = 60*60 # 1 hour timeout
+            sid = sid or str(uuid.uuid4())
             cookie['pubmedos_sid'] = sid
-            cookie['pubmedos_sid']['max-age'] = timeout
-            # store username and http_referrer in session id
-            memcache.set(sid, user.username + '|' + self.request.remote_addr, timeout+60) # set memcache to last 1 min longer than cookie to ensure memcache exists when cookie does!
+            # store username and remote_addr in session id
+            memcache.set(sid, user.username+'|'+self.request.remote_addr)
             self.response.headers['Set-Cookie'] = cookie.output(header='')
             self.json('authenticated')
           else:

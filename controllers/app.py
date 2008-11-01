@@ -33,14 +33,12 @@ def login_required(request_handler):
     if cookie.has_key('pubmedos_sid'):
       sid = cookie['pubmedos_sid'].value
       if sid:
-        m = memcache.get(sid)
-        if m:
-          un_ra = m.split('|')
-          if len(un_ra) > 1:
-            username = un_ra[0]
-            remote_addr = un_ra[1]
-            if username and self.request.remote_addr == remote_addr:
-              user = User.get_by_username(username)
+        session = memcache.get(sid)
+        if session:
+          username = session.split('|')[0]
+          remote_addr = session.split('|')[1]
+          if username and self.request.remote_addr == remote_addr:
+            user = User.get_by_username(username)
     self.current_user = user
     if not self.current_user:
       self.error(401)
