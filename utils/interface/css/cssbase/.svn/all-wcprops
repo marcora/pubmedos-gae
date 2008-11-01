@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/6/trunk/appengine_utilities/interface/css/cssbase
+END
+base.css
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/6/trunk/appengine_utilities/interface/css/cssbase/base.css
+END
+base-min.css
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/6/trunk/appengine_utilities/interface/css/cssbase/base-min.css
+END
+base-context.css
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/6/trunk/appengine_utilities/interface/css/cssbase/base-context.css
+END
+base-context-min.css
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/6/trunk/appengine_utilities/interface/css/cssbase/base-context-min.css
+END

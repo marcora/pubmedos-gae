@@ -3,7 +3,7 @@ import logging
 
 import urllib
 import mimetypes
-import simplejson as json
+from django.utils import simplejson as json
 import Cookie
 
 from google.appengine.api import memcache
@@ -11,6 +11,8 @@ from google.appengine.ext import webapp
 
 from mako.lookup import TemplateLookup
 from mako.template import Template
+
+from utils.sessions import Session
 
 from models.user import User
 
@@ -29,18 +31,9 @@ def url(*segments, **vars):
 def login_required(request_handler):
   def wrapper(self, *args, **kwargs):
     user = None
-    cookie = Cookie.SimpleCookie(self.request.headers.get('Cookie'))
-    if cookie.has_key('pubmedos_sid'):
-      sid = cookie['pubmedos_sid'].value
-      if sid:
-        m = memcache.get(sid)
-        if m:
-          un_ra = m.split('|')
-          if len(un_ra) > 1:
-            username = un_ra[0]
-            remote_addr = un_ra[1]
-            if username and self.request.remote_addr == remote_addr:
-              user = User.get_by_username(username)
+    username = self.session['username']
+    if username:
+      user = User.get_by_username(username)
     self.current_user = user
     if not self.current_user:
       self.error(401)
@@ -50,6 +43,9 @@ def login_required(request_handler):
 
 ## base request handler
 class RequestHandler(webapp.RequestHandler):
+
+  def __init__(self):
+    self.session = Session()
 
   def json(self, content):
     self.response.headers['Content-Type'] = 'text/javascript'

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/6/trunk/appengine_utilities/interface/css/cssreset
+END
+reset.css
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/6/trunk/appengine_utilities/interface/css/cssreset/reset.css
+END
+reset-min.css
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/6/trunk/appengine_utilities/interface/css/cssreset/reset-min.css
+END
+reset-context.css
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/6/trunk/appengine_utilities/interface/css/cssreset/reset-context.css
+END
+reset-context-min.css
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/6/trunk/appengine_utilities/interface/css/cssreset/reset-context-min.css
+END
