@@ -51,9 +51,6 @@ def login_required(request_handler):
 ## base request handler
 class RequestHandler(webapp.RequestHandler):
 
-  def __init__(self):
-    self.session = Session()
-
   def json(self, content):
     self.response.headers['Content-Type'] = 'text/javascript'
     cb = self.request.get('callback')
