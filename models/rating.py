@@ -72,7 +72,7 @@ class Rating(db.Model):
         value = not self.is_file
         self.is_file = value
         if not self.is_file:
-            self.folders = None
+            self.folder_list = []
         self.put()
         return self.is_file
 
