@@ -43,6 +43,27 @@ class Rating(db.Model):
                  'author': self.is_author,
                  'reprint': self.has_reprint() }
 
+    def to_hash_plus(self):
+        if self.annotation:
+            annotation_html = annotation_to_html(rating.annotation)
+        else:
+            annotation_html = '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
+        if self.is_file:
+            folders = [folder.to_hash() for folder in self.folders if folder]
+        else:
+            folders = []
+        return { 'id': self.pmid,
+                 'rating': self.rating,
+                 'file': self.is_file,
+                 'favorite': self.is_favorite,
+                 'read': self.is_read,
+                 'work': self.is_work,
+                 'author': self.is_author,
+                 'reprint': self.has_reprint(),
+                 'annotation': self.annotation,
+                 'annotation_html': annotation_html,
+                 'folders': folders }
+
     @property
     def folders(self):
         return Folder.get(self.folder_list)

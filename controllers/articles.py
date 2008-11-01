@@ -65,16 +65,8 @@ class item(Articles):
     if not (article and rating):
       self.error(404)
     else:
-      if rating.annotation:
-        annotation_html = annotation_to_html(rating.annotation)
-      else:
-        annotation_html = '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
-      if rating.is_file:
-        folders = [folder.to_hash() for folder in rating.folders if folder]
-      else:
-        folders = []
       record = article.to_hash()
-      record.update(rating.to_hash())
+      record.update(rating.to_hash_plus())
       record.update({ 'folders': folders })
       self.json(record)
 
