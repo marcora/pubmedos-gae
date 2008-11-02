@@ -72,7 +72,9 @@ class item_rating(Articles):
         self.error(400)
       else:
         rating.update_rating(value)
-        self.json(rating.to_hash())
+        record = article.to_hash()
+        record.update(rating.to_hash())
+        self.json(record)
 
 class item_annotation(Articles):
   @login_required
@@ -84,15 +86,9 @@ class item_annotation(Articles):
       self.error(404)
     else:
       value = self.request.get('value')
-      if not value:
-        self.error(400)
-      else:
-        rating.update_annotation(value)
-        if rating.annotation:
-          annotation_html = annotation_to_html(rating.annotation)
-        else:
-          annotation_html = '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
-        self.json(rating.to_hash_plus())
+      rating.update_annotation(value)
+      record = rating.to_hash_plus()
+      self.json(record)
 
 class item_reprint(Articles):
   @login_required
