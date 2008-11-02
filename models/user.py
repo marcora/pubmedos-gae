@@ -14,7 +14,6 @@ class User(db.Model):
     activation_code = db.StringProperty()
     # ratings
     # folders
-    # reprints
     updated_at = db.DateTimeProperty(required=True, auto_now=True)
     created_at = db.DateTimeProperty(required=True, auto_now_add=True)
 
@@ -57,6 +56,3 @@ class User(db.Model):
             return reduce(operator.add, [reprint.filesize for reprint in reprints])
         else:
             return 0
-
-    def delete(self):
-        pass
