@@ -10,6 +10,8 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import memcache
 from google.appengine.api import mail
 
+from config import *
+
 from models.user import User
 
 from controllers.app import *
@@ -23,8 +25,6 @@ class Root(RequestHandler):
 ## actions
 class index(Root):
   def get(self):
-#    self.title = 'Home'
-#    self.template()
     self.text('root - index')
 
 class help(Root):
@@ -135,7 +135,7 @@ class logout(Root):
     self.response.headers['Set-Cookie'] = 'pubmedos_sid=; expires=Sat, 29-Mar-1969 00:00:00 GMT;'
 
 ## routes
-def main():
+def main(test=False):
   urls = [('/', index),
           ('/terms', terms),
           ('/privacy', about),
@@ -145,8 +145,12 @@ def main():
           ('/activate/(\S+)', activate),
           ('/login', login),
           ('/logout', logout)]
-  application = webapp.WSGIApplication(urls, debug=True)
-  run_wsgi_app(application)
+
+  application = webapp.WSGIApplication(urls, debug=DEBUG)
+  if test:
+    return application
+  else:
+    run_wsgi_app(application)
 
 if __name__ == '__main__':
   main()
