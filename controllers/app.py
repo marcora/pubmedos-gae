@@ -37,8 +37,8 @@ def login_required(request_handler):
       if sid:
         session = memcache.get(sid)
         if session:
-          username = session.split('|')[0]
-          remote_addr = session.split('|')[1]
+          username = session.get('username')
+          remote_addr = session.get('remote_addr')
           if username and self.request.remote_addr == remote_addr:
             user = User.get_by_username(username)
     self.current_user = user

@@ -29,19 +29,19 @@ class index(Root):
 
 class help(Root):
   def get(self):
-    self.template()
+    self.text('root - help')
 
 class about(Root):
   def get(self):
-    self.template()
+    self.text('root - about')
 
 class terms(Root):
   def get(self):
-    self.template()
+    self.text('root - terms')
 
 class privacy(Root):
   def get(self):
-    self.template()
+    self.text('root - privacy')
 
 class register(Root):
   def post(self):
@@ -100,11 +100,12 @@ class login(Root):
       if sid:
         session = memcache.get(sid)
         if session:
-          un = session.split('|')[0]
-          ra = session.split('|')[1]
-          if username == un and self.request.remote_addr == ra:
-            # store username and remote_addr in session id
-            memcache.set(sid, un+'|'+ra)
+          un = session.get('username')
+          pw = session.get('password')
+          ra = session.get('remote_addr')
+          if username == un and password == pw and self.request.remote_addr == ra:
+            # store username, password and remote_addr in session
+            memcache.set(sid, { 'username':un, 'password':pw, 'remote_addr':ra })
             self.response.headers['Set-Cookie'] = cookie.output(header='')
             self.json('authenticated')
             return
@@ -117,9 +118,10 @@ class login(Root):
             sid = str(uuid.uuid4())
             cookie['pubmedos_sid'] = sid
             # store username and remote_addr in session id
-            memcache.set(sid, user.username+'|'+self.request.remote_addr)
+            memcache.set(sid, { 'username': user.username, 'password': user.password, 'remote_addr': self.request.remote_addr })
             self.response.headers['Set-Cookie'] = cookie.output(header='')
             self.json('authenticated')
+            return
           else:
             self.json('authenticate')
       else:
@@ -133,14 +135,14 @@ class logout(Root):
       if sid:
         memcache.delete(sid)
     self.response.headers['Set-Cookie'] = 'pubmedos_sid=; expires=Sat, 29-Mar-1969 00:00:00 GMT;'
-
+    
 
 def application():
   urls = [('/', index),
-          ('/terms', terms),
-          ('/privacy', about),
           ('/help', help),
           ('/about', about),
+          ('/terms', terms),
+          ('/privacy', privacy),
           ('/register', register),
           ('/activate/(\S+)', activate),
           ('/login', login),
