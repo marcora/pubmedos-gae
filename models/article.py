@@ -8,7 +8,7 @@ from google.appengine.api import urlfetch
 class Article(db.Model):
     ## datastore schema
     pmid = db.IntegerProperty(required=True)
-    xml = db.TextProperty(required=True)
+    xml = db.TextProperty(required=True, validator=lambda v: type(v) == type(u''))
     # ratings
     ratings_average_rating_cache = db.FloatProperty()
     ratings_count_cache = db.IntegerProperty(required=True, default=0)
@@ -28,7 +28,7 @@ class Article(db.Model):
             if res.status_code == 200:
                 xml = fromstring(res.content)
                 if xml.findtext('.//MedlineCitation/PMID') == str(pmid):
-                    xml = db.Text(res.content)
+                    xml = db.Text(res.content.decode('utf-8'))
                     article = Article.get_or_insert(key_name = key_name, pmid = pmid, xml = xml, fetched_at = datetime.utcnow())
         return article
 

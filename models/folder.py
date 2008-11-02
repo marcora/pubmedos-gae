@@ -20,6 +20,7 @@ class Folder(db.Model):
     ## class methods
     @staticmethod
     def get_or_insert_by_user_and_title(user, title):
+        title = title.decode('utf-8')
         folder = Folder.gql("WHERE user = :user AND title = :title AND ANCESTOR IS :user", user=user, title=title).get()
         if folder is None:
             folder = Folder(user=user, title=db.Category(title), parent=user)
@@ -31,6 +32,7 @@ class Folder(db.Model):
 
     @staticmethod
     def get_by_user_and_title(user, title):
+        title = title.decode('utf-8')
         return Folder.gql("WHERE user = :user AND title = :title AND ANCESTOR IS :user", user=user, title=title).get()
 
     ## instance methods

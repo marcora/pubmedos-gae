@@ -10,19 +10,19 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 25 times in query history.
+# Used 8 times in query history.
 - kind: Folder
   properties:
   - name: user
   - name: title
 
-# Used 2 times in query history.
+# Used once in query history.
 - kind: Rating
   properties:
   - name: article
   - name: rating
 
-# Used 3 times in query history.
+# Used once in query history.
 - kind: Rating
   ancestor: yes
   properties:

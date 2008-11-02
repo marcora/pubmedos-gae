@@ -5,9 +5,9 @@ from google.appengine.ext import db
 
 class User(db.Model):
     ## datastore schema
-    username = db.StringProperty(required=True, validator=lambda v: re.match('^\w+$', v))
+    username = db.StringProperty(required=True, validator=lambda v: re.match(r'^\w+$', v))
     password = db.StringProperty(required=True)
-    email = db.EmailProperty(required=True, validator=lambda v: re.match('^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$', v))
+    email = db.EmailProperty(required=True, validator=lambda v: re.match(r'^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$', v))
     lastname = db.StringProperty(required=True, validator=lambda v: type(v) == type(u''))
     forename = db.StringProperty(required=True, validator=lambda v: type(v) == type(u''))
     suffix = db.StringProperty(default=u'', choices=set([u'',u'Jr',u'Sr',u'2nd',u'3rd',u'4th',u'5th']))

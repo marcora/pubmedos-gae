@@ -45,12 +45,13 @@ class privacy(Root):
 
 class register(Root):
   def post(self):
-    username = self.request.get('username')
-    password_hash = self.request.get('password')
-    email = self.request.get('email')
-    lastname = self.request.get('lastname')
-    forename = self.request.get('forename')
+    username = str(self.request.get('username')).strip()
+    password_hash = str(self.request.get('password')).strip()
+    email = str(self.request.get('email')).strip()
+    lastname = self.request.get('lastname').decode('utf-8').strip()
+    forename = self.request.get('forename').decode('utf-8').strip()
     suffix = self.request.get('suffix')
+    if suffix: suffix = decode('utf-8').strip()
     if username and \
           password_hash and \
           lastname and \
@@ -58,9 +59,6 @@ class register(Root):
           email and \
           re.match('^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$', email):
       activation_code = uuid.uuid4().urn[9:]
-      lastname = lastname.decode('utf-8')
-      forename = forename.decode('utf-8')
-      if suffix: suffix = suffix.decode('utf-8')
       user = User.get_or_insert_by_username(username, password = password_hash, lastname = lastname, forename = forename, suffix = suffix, email = email, activation_code = activation_code)
       if user:
         mail.send_mail(sender= "edoardo.marcora@gmail.com",# "help@pubmedos.appspot.com",
@@ -90,8 +88,8 @@ class activate(Root):
 
 class login(Root):
   def post(self):
-      username = self.request.get('username')
-      password = self.request.get('password')
+      username = str(self.request.get('username')).strip()
+      password = str(self.request.get('password')).strip()
       user = None
       sid = None
       cookie = Cookie.SimpleCookie(self.request.headers.get('Cookie'))

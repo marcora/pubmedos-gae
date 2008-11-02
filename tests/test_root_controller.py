@@ -26,6 +26,8 @@ def test_privacy_action():
     assert 'root - privacy' in res
 
 def test_login_action_before_registration():
+    for user in User.all():
+        user.delete()
     res = app.post('/login', {'username':'marcora', 'password':'123456'})
     assert res.json == 'register'
 

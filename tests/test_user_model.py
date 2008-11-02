@@ -4,6 +4,7 @@ def test_create():
     for user in User.all():
         user.delete()
     user = User.get_or_insert_by_username(username='marcora', password='123456', email='marcora@caltech.edu', lastname='Marcora', forename='Edoardo')
+    assert user.is_saved()
     assert user.key().name() == 'username:marcora'
     assert user.username == 'marcora'
     assert user.password == '123456'

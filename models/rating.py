@@ -27,8 +27,8 @@ class Rating(db.Model):
     is_work = db.BooleanProperty(required=True, default=False)
     is_read = db.BooleanProperty(required=True, default=False)
     is_author = db.BooleanProperty(required=True, default=False)
-    annotation = db.TextProperty()
-    xml = db.TextProperty()
+    annotation = db.TextProperty(validator=lambda v: type(v) == type(u''))
+    xml = db.TextProperty(validator=lambda v: type(v) == type(u''))
     reprint = db.ReferenceProperty(Reprint, collection_name='ratings')
     folder_list = db.ListProperty(db.Key)
     updated_at = db.DateTimeProperty(required=True, auto_now=True)
@@ -94,7 +94,7 @@ class Rating(db.Model):
 
     def update_annotation(self, annotation):
         try:
-            self.annotation = db.Text(annotation)
+            self.annotation = db.Text(annotation.decode('utf-8'))
             self.put()
             return True
         except:
@@ -131,6 +131,3 @@ class Rating(db.Model):
         self.is_author = value
         self.put()
         return self.is_author
-
-    def delete(self):
-        pass
