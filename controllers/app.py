@@ -3,7 +3,7 @@ import logging
 
 import urllib
 import mimetypes
-from django.utils import simplejson as json
+import simplejson as json
 import Cookie
 
 from google.appengine.api import memcache
@@ -50,7 +50,7 @@ def login_required(request_handler):
 class RequestHandler(webapp.RequestHandler):
 
   def json(self, content):
-    self.response.headers['Content-Type'] = 'text/javascript'
+    self.response.headers['Content-Type'] = 'application/json' # 'text/javascript'
     cb = self.request.get('callback')
     if cb:
       self.response.out.write(cb + '(' + json.dumps(content) + ')')

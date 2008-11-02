@@ -12,6 +12,9 @@ class ControllerTest(unittest.TestCase):
     def test_index_action(self):
         app = TestApp(self.app)
         res = app.get('/')
-        self.assertEqual('200 OK', res.status)
         self.assertTrue('root - index' in res)
 
+    def test_login_action(self):
+        app = TestApp(self.app)
+        res = app.post('/login', {'username':'marcora', 'password':'deddym369'})
+        self.assertTrue(res.json == 'register')

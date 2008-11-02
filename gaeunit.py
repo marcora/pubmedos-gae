@@ -15,7 +15,7 @@ Usage:
 3. Launch the development web server.  To run all tests, point your browser to:
 
    http://localhost:8080/test     (Modify the port if necessary.)
-   
+
    For plain text output add '?format=plain' to the above URL.
    See README.TXT for information on how to run specific tests.
 
@@ -66,11 +66,11 @@ import time
 import re
 import logging
 from google.appengine.ext import webapp
-from google.appengine.api import apiproxy_stub_map  
+from google.appengine.api import apiproxy_stub_map
 from google.appengine.api import datastore_file_stub
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-_DEFAULT_TEST_DIR = 'test'
+_DEFAULT_TEST_DIR = 'tests'
 
 
 ##############################################################################
@@ -99,7 +99,7 @@ class MainTestPageHandler(webapp.RequestHandler):
             error = _log_error("The format '%s' is not valid." % format)
             self.error(404)
             self.response.out.write(error)
-            
+
     def _render_html(self):
         suite, error = _create_suite(self.request)
         if not error:
@@ -107,7 +107,7 @@ class MainTestPageHandler(webapp.RequestHandler):
         else:
             self.error(404)
             self.response.out.write(error)
-        
+
     def _render_plain(self):
         self.response.headers["Content-Type"] = "text/plain"
         runner = unittest.TextTestRunner(self.response.out)
@@ -178,7 +178,7 @@ class JsonTestRunner:
 
 
 class JsonTestRunHandler(webapp.RequestHandler):
-    def get(self):    
+    def get(self):
         test_name = self.request.get("name")
         _load_default_test_modules()
         suite = unittest.defaultTestLoader.loadTestsFromName(test_name)
@@ -274,7 +274,7 @@ def _test_suite_to_json(suite):
             else:
                 method_list = mod_dict[class_name]
                 method_list.append(method_name)
-                
+
     # Python's dictionary and list string representations happen to match JSON formatting.
     return str(test_dict)
 
@@ -287,14 +287,14 @@ def _run_test_suite(runner, suite):
     test suite, run the test suite, and restore the development apiproxy.
     This isolates the test datastore from the development datastore.
 
-    """        
+    """
     original_apiproxy = apiproxy_stub_map.apiproxy
     try:
-       apiproxy_stub_map.apiproxy = apiproxy_stub_map.APIProxyStubMap() 
-       temp_stub = datastore_file_stub.DatastoreFileStub('GAEUnitDataStore', None, None)  
+       apiproxy_stub_map.apiproxy = apiproxy_stub_map.APIProxyStubMap()
+       temp_stub = datastore_file_stub.DatastoreFileStub('GAEUnitDataStore', None, None)
        apiproxy_stub_map.apiproxy.RegisterStub('datastore', temp_stub)
        # Allow the other services to be used as-is for tests.
-       for name in ['user', 'urlfetch', 'mail', 'memcache', 'images']: 
+       for name in ['user', 'urlfetch', 'mail', 'memcache', 'images']:
            apiproxy_stub_map.apiproxy.RegisterStub(name, original_apiproxy.GetStub(name))
        runner.run(suite)
     finally:
@@ -305,7 +305,7 @@ def _log_error(s):
    logging.warn(s)
    return s
 
-           
+
 ################################################
 # Browser HTML, CSS, and Javascript
 ################################################
@@ -340,7 +340,7 @@ _MAIN_PAGE_CONTENT = """
           alert("XMLHttpRequest not supported");
           return null;
         }
-        
+
         function requestTestRun(moduleName, className, methodName) {
             var methodSuffix = "";
             if (methodName) {
@@ -388,17 +388,17 @@ _MAIN_PAGE_CONTENT = """
                     testFailed();
                 }
             };
-            xmlHttp.send(null);            
+            xmlHttp.send(null);
         }
 
         function testFailed() {
             document.getElementById("testindicator").style.backgroundColor="red";
         }
-        
+
         function testSucceed() {
             document.getElementById("testindicator").style.backgroundColor="green";
         }
-        
+
         function runTests() {
             // Run each test asynchronously (concurrently).
             var totalTests = 0;
@@ -468,7 +468,7 @@ application = webapp.WSGIApplication([('/test', MainTestPageHandler),
                                       debug=True)
 
 def main():
-    run_wsgi_app(application)                                    
+    run_wsgi_app(application)
 
 if __name__ == '__main__':
     main()
