@@ -1,7 +1,7 @@
 import logging
 
-import uuid
 import re
+import uuid
 import Cookie
 
 from google.appengine.ext import db

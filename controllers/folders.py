@@ -9,6 +9,8 @@ from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
+from config import *
+
 from models.folder import Folder
 
 from controllers.app import *
@@ -113,15 +115,17 @@ class root_dialog(Folders):
     self.folders = current_user.folders.order('title')
     self.template()
 
-## routes
-def main():
+
+def application():
   urls = [('/folders/?', root),
           ('/folders/(\d+)', item),
           ('/folders/(\d+)/articles/?', item_articles),
           ('/folders/(\d+)/articles/redirect', item_articles_redirect),
           ('/folders/dialog', root_dialog)]
-  application = webapp.WSGIApplication(urls, debug=True)
-  run_wsgi_app(application)
+  return webapp.WSGIApplication(urls, debug=DEBUG)
+
+def main():
+  run_wsgi_app(application())
 
 if __name__ == '__main__':
   main()

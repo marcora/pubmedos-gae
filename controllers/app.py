@@ -12,6 +12,8 @@ from google.appengine.ext import webapp
 from mako.lookup import TemplateLookup
 from mako.template import Template
 
+from config import *
+
 from models.user import User
 
 template_lookup = TemplateLookup(directories=[os.path.dirname(__file__).replace('/controllers', '/views')], output_encoding='utf-8', encoding_errors='replace')

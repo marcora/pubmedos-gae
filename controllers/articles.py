@@ -6,6 +6,8 @@ from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
+from config import *
+
 from models.reprint import Reprint
 from models.folder import Folder
 from models.article import Article
@@ -273,8 +275,8 @@ class item_sponsored_links(Articles):
     else:
       self.error(404)
 
-## routes
-def main():
+
+def application():
   urls = [('/articles/?', root),
           ('/articles/file/redirect', root_file_redirect),
           ('/articles/toprated/redirect', root_toprated_redirect),
@@ -292,8 +294,10 @@ def main():
           ('/articles/(\d+)/annotation', item_annotation),
           ('/articles/(\d+)/reprint', item_reprint),
           ('/articles/(\d+)/sponsored_links', item_sponsored_links)]
-  application = webapp.WSGIApplication(urls, debug=True)
-  run_wsgi_app(application)
+  return webapp.WSGIApplication(urls, debug=DEBUG)
+
+def main():
+  run_wsgi_app(application())
 
 if __name__ == '__main__':
   main()

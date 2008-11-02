@@ -5,6 +5,8 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import mail
 
+from config import *
+
 from models.user import User
 
 from controllers.app import *
@@ -26,11 +28,13 @@ class item(Users):
     else:
       self.error(404)
 
-## routes
-def main():
+
+def application():
   urls = [('/users/(\w+)', item)]
-  application = webapp.WSGIApplication(urls, debug=True)
-  run_wsgi_app(application)
+  return webapp.WSGIApplication(urls, debug=DEBUG)
+
+def main():
+  run_wsgi_app(application())
 
 if __name__ == '__main__':
   main()

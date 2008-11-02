@@ -8,6 +8,8 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 
 from google.appengine.api import users
 
+from config import *
+
 from controllers.app import *
 
 ## base request handler
@@ -21,11 +23,12 @@ class root(Admin):
     self.text(admin.nickname())
 
 
-## routes
-def main():
+def application():
   urls = [('/admin/?', root),]
-  application = webapp.WSGIApplication(urls, debug=True)
-  run_wsgi_app(application)
+  return webapp.WSGIApplication(urls, debug=DEBUG)
+
+def main():
+  run_wsgi_app(application())
 
 if __name__ == '__main__':
   main()

@@ -4,6 +4,8 @@ from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
+from config import *
+
 from models.folder import Folder
 from models.article import Article
 from models.rating import Rating
@@ -82,13 +84,14 @@ class item(ArticlesFolders):
         self.error(400)
 
 
-## routes
-def main():
+def application():
   urls = [('/articles/(\d+)/folders/?', root),
           ('/articles/(\d+)/folders/(\d+)', item),
           ('/articles/(\d+)/folders/dialog', root_dialog)]
-  application = webapp.WSGIApplication(urls, debug=True)
-  run_wsgi_app(application)
+  return webapp.WSGIApplication(urls, debug=DEBUG)
+
+def main():
+  run_wsgi_app(application())
 
 if __name__ == '__main__':
   main()
