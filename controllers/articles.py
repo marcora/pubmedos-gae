@@ -1,7 +1,6 @@
 import logging, urllib, re
 
 from ncbi.eutils import epost
-from postmarkup import postmarkup
 
 from google.appengine.ext import db
 from google.appengine.ext import webapp
@@ -17,17 +16,6 @@ from controllers.app import *
 ## base request handler
 class Articles(RequestHandler):
   pass
-
-## helpers
-def annotation_to_html(annotation):
-  annotation_markup = postmarkup.create(use_pygments=False)
-  annotation_markup.add_tag(u'pubmed',
-                            postmarkup.SearchTag,
-                            u'pubmed',
-                            u"http://www.ncbi.nlm.nih.gov/pubmed/%s", u'pubmed.gov')
-  annotation_markup.add_tag(u'sub', postmarkup.SimpleTag, u'sub', u'sub')
-  annotation_markup.add_tag(u'sup', postmarkup.SimpleTag, u'sup', u'sup')
-  return annotation_markup(annotation)
 
 ## actions
 class root(Articles):
@@ -84,11 +72,7 @@ class item_rating(Articles):
         self.error(400)
       else:
         rating.update_rating(value)
-        self.json({
-            'ratings_average_rating': article.ratings_average_rating_cache,
-            'ratings_count': article.ratings_count_cache,
-            'rating': rating.rating,
-            })
+        self.json(rating.to_hash())
 
 class item_annotation(Articles):
   @login_required
@@ -108,10 +92,7 @@ class item_annotation(Articles):
           annotation_html = annotation_to_html(rating.annotation)
         else:
           annotation_html = '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
-        self.json({
-            'annotation': rating.annotation,
-            'annotation_html': annotation_html,
-            })
+        self.json(rating.to_hash_plus())
 
 class item_reprint(Articles):
   @login_required

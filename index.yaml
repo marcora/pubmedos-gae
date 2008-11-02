@@ -10,7 +10,7 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 20 times in query history.
+# Used 22 times in query history.
 - kind: Folder
   properties:
   - name: user
@@ -22,7 +22,7 @@ indexes:
   - name: article
   - name: rating
 
-# Used once in query history.
+# Used 2 times in query history.
 - kind: Rating
   ancestor: yes
   properties:

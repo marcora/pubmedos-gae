@@ -90,31 +90,40 @@ class activate(Root):
 
 class login(Root):
   def post(self):
-    try:
       username = self.request.get('username')
       password = self.request.get('password')
+      user = None
+      sid = None
+      cookie = Cookie.SimpleCookie(self.request.headers.get('Cookie'))
+      if cookie.has_key('pubmedos_sid'):
+        sid = cookie['pubmedos_sid'].value
+      if sid:
+        session = memcache.get(sid)
+        if session:
+          un = session.split('|')[0]
+          ra = session.split('|')[1]
+          if username == un and self.request.remote_addr == ra:
+            # store username and remote_addr in session id
+            memcache.set(sid, un+'|'+ra)
+            self.response.headers['Set-Cookie'] = cookie.output(header='')
+            self.json('authenticated')
+            return
       user = User.get_by_username(username)
       if user:
         if user.activation_code:
           self.json('activate')
         else:
           if password == user.password:
-            sid = None
-            cookie = Cookie.SimpleCookie(self.request.headers.get('Cookie'))
-            if cookie.has_key('pubmedos_sid'):
-              sid = cookie['pubmedos_sid'].value
-            sid = sid or str(uuid.uuid4())
+            sid = str(uuid.uuid4())
             cookie['pubmedos_sid'] = sid
             # store username and remote_addr in session id
             memcache.set(sid, user.username+'|'+self.request.remote_addr)
             self.response.headers['Set-Cookie'] = cookie.output(header='')
             self.json('authenticated')
           else:
-            raise
+            self.json('authenticate')
       else:
         self.json('register')
-    except:
-      self.json('authenticate')
 
 class logout(Root):
   def get(self):

@@ -5,6 +5,17 @@ from models.article import Article
 from models.reprint import Reprint
 from models.folder import Folder
 
+from postmarkup import postmarkup
+def annotation_to_html(annotation):
+  annotation_markup = postmarkup.create(use_pygments=False)
+  annotation_markup.add_tag(u'pubmed',
+                            postmarkup.SearchTag,
+                            u'pubmed',
+                            u"http://www.ncbi.nlm.nih.gov/pubmed/%s", u'pubmed.gov')
+  annotation_markup.add_tag(u'sub', postmarkup.SimpleTag, u'sub', u'sub')
+  annotation_markup.add_tag(u'sup', postmarkup.SimpleTag, u'sup', u'sup')
+  return annotation_markup(annotation)
+
 class Rating(db.Model):
     ## datastore schema
     user = db.ReferenceProperty(User, required=True, collection_name='ratings')
@@ -45,7 +56,7 @@ class Rating(db.Model):
 
     def to_hash_plus(self):
         if self.annotation:
-            annotation_html = annotation_to_html(rating.annotation)
+            annotation_html = annotation_to_html(self.annotation)
         else:
             annotation_html = '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
         if self.is_file:
