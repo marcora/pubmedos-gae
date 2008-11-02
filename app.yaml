@@ -31,6 +31,11 @@ handlers:
   script: controllers/root.py
   secure: always
 
+- url: /admin(/?|.*)
+  script: controllers/root.py
+  login: admin
+  secure: always
+
 - url: /.*
   script: not_found.py
 
