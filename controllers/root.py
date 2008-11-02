@@ -105,7 +105,8 @@ class login(Root):
           ra = session.get('remote_addr')
           if username == un and password == pw and self.request.remote_addr == ra:
             # store username, password and remote_addr in session
-            memcache.set(sid, { 'username':un, 'password':pw, 'remote_addr':ra })
+            cookie['pubmedos_sid']['max-age'] = SESSION_TIMEOUT
+            memcache.set(sid, { 'username':un, 'password':pw, 'remote_addr':ra }, SESSION_TIMEOUT+(SESSION_TIMEOUT/10))
             self.response.headers['Set-Cookie'] = cookie.output(header='')
             self.json('authenticated')
             return
@@ -117,8 +118,9 @@ class login(Root):
           if password == user.password:
             sid = str(uuid.uuid4())
             cookie['pubmedos_sid'] = sid
-            # store username and remote_addr in session id
-            memcache.set(sid, { 'username': user.username, 'password': user.password, 'remote_addr': self.request.remote_addr })
+            cookie['pubmedos_sid']['max-age'] = SESSION_TIMEOUT
+            # store username, password and remote_addr in session
+            memcache.set(sid, { 'username': user.username, 'password': user.password, 'remote_addr': self.request.remote_addr }, SESSION_TIMEOUT+(SESSION_TIMEOUT/10))
             self.response.headers['Set-Cookie'] = cookie.output(header='')
             self.json('authenticated')
             return
@@ -135,7 +137,7 @@ class logout(Root):
       if sid:
         memcache.delete(sid)
     self.response.headers['Set-Cookie'] = 'pubmedos_sid=; expires=Sat, 29-Mar-1969 00:00:00 GMT;'
-    
+
 
 def application():
   urls = [('/', index),
