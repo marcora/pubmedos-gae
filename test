@@ -1,0 +1,2 @@
+#!/bin/bash
+nosetests --with-gae --gae-lib-root=/home/marcorae/src/google/google_appengine --gae-application=/home/marcorae/src/google/pubmedos --where=tests

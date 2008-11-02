@@ -1,20 +1,12 @@
-import unittest
-
 from webtest import TestApp
+from controllers.root import application
 
-import controllers.root as controller
+app = TestApp(application())
 
-class ControllerTest(unittest.TestCase):
+def test_index_action():
+    res = app.get('/')
+    assert 'root - index' in res
 
-    def setUp(self):
-        self.app = controller.main(test=True)
-
-    def test_index_action(self):
-        app = TestApp(self.app)
-        res = app.get('/')
-        self.assertTrue('root - index' in res)
-
-    def test_login_action(self):
-        app = TestApp(self.app)
-        res = app.post('/login', {'username':'marcora', 'password':'deddym369'})
-        self.assertTrue(res.json == 'register')
+def test_login_action():
+    res = app.post('/login', {'username':'marcora', 'password':'deddym369'})
+    assert res.json == 'register'

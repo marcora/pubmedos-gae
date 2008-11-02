@@ -134,8 +134,8 @@ class logout(Root):
         memcache.delete(sid)
     self.response.headers['Set-Cookie'] = 'pubmedos_sid=; expires=Sat, 29-Mar-1969 00:00:00 GMT;'
 
-## routes
-def main(test=False):
+
+def application():
   urls = [('/', index),
           ('/terms', terms),
           ('/privacy', about),
@@ -145,12 +145,10 @@ def main(test=False):
           ('/activate/(\S+)', activate),
           ('/login', login),
           ('/logout', logout)]
+  return webapp.WSGIApplication(urls, debug=DEBUG)
 
-  application = webapp.WSGIApplication(urls, debug=DEBUG)
-  if test:
-    return application
-  else:
-    run_wsgi_app(application)
+def main():
+  run_wsgi_app(application())
 
 if __name__ == '__main__':
   main()
