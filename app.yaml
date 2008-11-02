@@ -36,11 +36,6 @@ handlers:
   login: admin
   secure: always
 
-- url: /test.*
-  script: gaeunit.py
-  login: admin
-  secure: always
-
 - url: /.*
   script: not_found.py
 
