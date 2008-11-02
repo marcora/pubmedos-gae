@@ -37,14 +37,10 @@ class User(db.Model):
 
     ## instance methods
     @property
-    def long_name(self):
+    def name(self):
         name = "%s %s %s" % (self.forename, self.lastname, self.suffix)
         re.sub('\s+', ' ', name)
         return name.strip()
-
-    @property
-    def short_name(self):
-        pass
 
     @property
     def authored_articles(self):
