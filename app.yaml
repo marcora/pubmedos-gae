@@ -32,7 +32,7 @@ handlers:
   secure: always
 
 - url: /admin(/?|.*)
-  script: controllers/root.py
+  script: controllers/admin.py
   login: admin
   secure: always
 
