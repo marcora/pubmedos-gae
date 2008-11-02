@@ -1,0 +1,2 @@
+#!/bin/bash
+/home/marcorae/src/google/google_appengine/appcfg.py update /home/marcorae/src/google/pubmedos

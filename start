@@ -1,2 +1,2 @@
 #!/bin/bash
-/home/marcorae/src/google/google_appengine/dev_appserver.py -p 4000 -a 0.0.0.0 -c /home/marcorae/src/google/pubmedos
+/home/marcorae/src/google/google_appengine/dev_appserver.py -p 4000 -a 0.0.0.0 /home/marcorae/src/google/pubmedos
