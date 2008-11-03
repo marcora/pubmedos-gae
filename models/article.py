@@ -1,11 +1,11 @@
 from datetime import datetime
 from xml.etree.ElementTree import fromstring, tostring
 
-from google.appengine.ext import db
 from google.appengine.api import urlfetch
 
+from models.app import *
 
-class Article(db.Model):
+class Article(Model):
     ## datastore schema
     pmid = db.IntegerProperty(required=True)
     xml = db.TextProperty(required=True, validator=lambda v: type(v) == type(u''))

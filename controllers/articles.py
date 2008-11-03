@@ -1,22 +1,9 @@
-import logging, urllib, re
-
 from ncbi.eutils import epost
-
-from google.appengine.ext import db
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
-
-from config import *
-
-from models.reprint import Reprint
-from models.folder import Folder
-from models.article import Article
-from models.rating import Rating
 
 from controllers.app import *
 
 ## base request handler
-class Articles(RequestHandler):
+class Articles(Controller):
   pass
 
 ## actions
@@ -274,30 +261,3 @@ class item_sponsored_links(Articles):
       self.template()
     else:
       self.error(404)
-
-
-def application():
-  urls = [('/articles/?', root),
-          ('/articles/file/redirect', root_file_redirect),
-          ('/articles/toprated/redirect', root_toprated_redirect),
-          ('/articles/favorite/redirect', root_favorite_redirect),
-          ('/articles/work/redirect', root_work_redirect),
-          ('/articles/read/redirect', root_read_redirect),
-          ('/articles/author/redirect', root_author_redirect),
-          ('/articles/(\d+)', item),
-          ('/articles/(\d+)/file', item_file),
-          ('/articles/(\d+)/favorite', item_favorite),
-          ('/articles/(\d+)/work', item_work),
-          ('/articles/(\d+)/read', item_read),
-          ('/articles/(\d+)/author', item_author),
-          ('/articles/(\d+)/rating', item_rating),
-          ('/articles/(\d+)/annotation', item_annotation),
-          ('/articles/(\d+)/reprint', item_reprint),
-          ('/articles/(\d+)/sponsored_links', item_sponsored_links)]
-  return webapp.WSGIApplication(urls, debug=DEBUG)
-
-def main():
-  run_wsgi_app(application())
-
-if __name__ == '__main__':
-  main()

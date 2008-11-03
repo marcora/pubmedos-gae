@@ -1,19 +1,26 @@
-import logging
-
-import urllib, re
+import sys, os, logging, urllib, re, base64
 
 from google.appengine.ext import db
+from google.appengine.api import memcache
+from google.appengine.api import mail
+from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-from google.appengine.api import users
+## configon
+DEBUG = True
+SESSION_TIMEOUT = 2*(60*60) # two hours
 
-from config import *
+from models.user import User
+from models.reprint import Reprint
+from models.folder import Folder
+from models.article import Article
+from models.rating import Rating
 
 from controllers.app import *
 
 ## base request handler
-class Admin(RequestHandler):
+class Admin(Controller):
   pass
 
 ## actions
@@ -22,13 +29,3 @@ class root(Admin):
     admin = users.get_current_user()
     self.text(admin.nickname())
 
-
-def application():
-  urls = [('/admin/?', root),]
-  return webapp.WSGIApplication(urls, debug=DEBUG)
-
-def main():
-  run_wsgi_app(application())
-
-if __name__ == '__main__':
-  main()

@@ -1,7 +1,6 @@
+from models.app import *
+
 import base64, hashlib
-
-from google.appengine.ext import db
-
 def b64_sha1(s):
   return base64.standard_b64encode(hashlib.sha1(s).digest())
 
@@ -11,7 +10,7 @@ def really_urlsafe_b64encode(s):
 def really_urlsafe_b64decode(s):
      return base64.urlsafe_b64decode(s + '=' * (len(s) % 4))
 
-class Reprint(db.Model):
+class Reprint(Model):
     ## datastore schema
     checksum = db.StringProperty(required=True)
     filedata = db.BlobProperty(required=True)

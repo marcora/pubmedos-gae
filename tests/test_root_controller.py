@@ -1,9 +1,13 @@
 import re
 from webtest import TestApp
-from controllers.root import application
+from main import application
 from models.user import User
 
 app = TestApp(application())
+
+def setup():
+    for user in User.all():
+        user.delete()
 
 def test_index_action():
     res = app.get('/')
@@ -26,8 +30,6 @@ def test_privacy_action():
     assert 'root - privacy' in res
 
 def test_login_action_before_registration():
-    for user in User.all():
-        user.delete()
     res = app.post('/login', {'username':'marcora', 'password':'123456'})
     assert res.json == 'register'
 

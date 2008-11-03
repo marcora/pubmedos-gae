@@ -1,9 +1,9 @@
 import operator
 import re
 
-from google.appengine.ext import db
+from models.app import *
 
-class User(db.Model):
+class User(Model):
     ## datastore schema
     username = db.StringProperty(required=True, validator=lambda v: re.match(r'^\w+$', v))
     password = db.StringProperty(required=True)

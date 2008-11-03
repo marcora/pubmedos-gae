@@ -18,24 +18,15 @@ handlers:
 - url: /images
   static_dir: static/images
 
-- url: /articles/(\d+)/folders(/?|/.*)
-  script: controllers/articles_folders.py
-
-- url: /(users|articles|folders)(/?|/.*)
-  script: controllers/\1.py
-
-- url: /(|logout|terms|privacy|help|about)/?
-  script: controllers/root.py
-
 - url: /(login|register|activate)(/?|/.*)
-  script: controllers/root.py
+  script: main.py
   secure: always
 
 - url: /admin(/?|.*)
-  script: controllers/admin.py
+  script: main.py
   login: admin
   secure: always
 
 - url: /.*
-  script: not_found.py
+  script: main.py
 

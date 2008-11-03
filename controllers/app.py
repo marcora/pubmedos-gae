@@ -1,22 +1,26 @@
-import os
-import logging
-
-import urllib
+import sys, os, logging, urllib, re
 import mimetypes
 import simplejson as json
 import Cookie
 
+from google.appengine.ext import db
 from google.appengine.api import memcache
+from google.appengine.api import mail
+from google.appengine.api import users
 from google.appengine.ext import webapp
+
+from models.user import User
+from models.reprint import Reprint
+from models.folder import Folder
+from models.article import Article
+from models.rating import Rating
 
 from mako.lookup import TemplateLookup
 from mako.template import Template
 
-from config import *
-
-from models.user import User
-
 template_lookup = TemplateLookup(directories=[os.path.dirname(__file__).replace('/controllers', '/views')], output_encoding='utf-8', encoding_errors='replace')
+
+SESSION_TIMEOUT = 2*(60*60) # two hours
 
 ## helpers
 def url(*segments, **vars):
@@ -48,8 +52,8 @@ def login_required(request_handler):
       request_handler(self, *args, **kwargs)
   return wrapper
 
-## base request handler
-class RequestHandler(webapp.RequestHandler):
+## base controller
+class Controller(webapp.RequestHandler):
 
   def json(self, content):
     self.response.headers['Content-Type'] = 'application/json' # 'text/javascript'

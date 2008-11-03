@@ -1,8 +1,8 @@
-from google.appengine.ext import db
-
 from models.user import User
 from models.article import Article
 from models.reprint import Reprint
+
+from models.app import *
 
 from postmarkup import postmarkup
 def annotation_to_html(annotation):
@@ -15,7 +15,7 @@ def annotation_to_html(annotation):
   annotation_markup.add_tag(u'sup', postmarkup.SimpleTag, u'sup', u'sup')
   return annotation_markup(annotation)
 
-class Rating(db.Model):
+class Rating(Model):
     ## datastore schema
     user = db.ReferenceProperty(User, required=True, collection_name='ratings')
     article = db.ReferenceProperty(Article, required=True, collection_name='ratings')

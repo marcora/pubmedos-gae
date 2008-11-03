@@ -1,14 +1,8 @@
-from google.appengine.ext import db
+from models.app import *
 
 from models.user import User
 
-# transaction decorator
-def transaction(wrapped):
-    def wrapper(*args, **kwargs):
-        return db.run_in_transaction(wrapped, *args, **kwargs)
-    return wrapper
-
-class Folder(db.Model):
+class Folder(Model):
     ## datastore schema
     user = db.ReferenceProperty(User, required=True, collection_name='folders')
     title = db.CategoryProperty(required=True)

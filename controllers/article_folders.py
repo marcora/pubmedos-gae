@@ -1,19 +1,7 @@
-import logging
-
-from google.appengine.ext import db
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
-
-from config import *
-
-from models.folder import Folder
-from models.article import Article
-from models.rating import Rating
-
 from controllers.app import *
 
 ## base request handler
-class ArticlesFolders(RequestHandler):
+class ArticlesFolders(Controller):
   pass
 
 ## actions
@@ -83,15 +71,3 @@ class item(ArticlesFolders):
       else:
         self.error(400)
 
-
-def application():
-  urls = [('/articles/(\d+)/folders/?', root),
-          ('/articles/(\d+)/folders/(\d+)', item),
-          ('/articles/(\d+)/folders/dialog', root_dialog)]
-  return webapp.WSGIApplication(urls, debug=DEBUG)
-
-def main():
-  run_wsgi_app(application())
-
-if __name__ == '__main__':
-  main()

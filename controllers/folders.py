@@ -1,22 +1,9 @@
-import logging
-
-import base64
-import urllib
-
 from ncbi.eutils import epost
-
-from google.appengine.ext import db
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
-
-from config import *
-
-from models.folder import Folder
 
 from controllers.app import *
 
 ## base request handler
-class Folders(RequestHandler):
+class Folders(Controller):
   pass
 
 ## actions
@@ -115,17 +102,3 @@ class root_dialog(Folders):
     self.folders = current_user.folders.order('title')
     self.template()
 
-
-def application():
-  urls = [('/folders/?', root),
-          ('/folders/(\d+)', item),
-          ('/folders/(\d+)/articles/?', item_articles),
-          ('/folders/(\d+)/articles/redirect', item_articles_redirect),
-          ('/folders/dialog', root_dialog)]
-  return webapp.WSGIApplication(urls, debug=DEBUG)
-
-def main():
-  run_wsgi_app(application())
-
-if __name__ == '__main__':
-  main()

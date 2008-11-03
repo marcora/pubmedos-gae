@@ -1,26 +1,10 @@
-import logging
-
-import re
 import uuid
-import Cookie
-
-from google.appengine.ext import db
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
-from google.appengine.api import memcache
-from google.appengine.api import mail
-
-from config import *
-
-from models.user import User
 
 from controllers.app import *
 
-## base request handler
-class Root(RequestHandler):
+## controller
+class Root(Controller):
   pass
-
-## helpers
 
 ## actions
 class index(Root):
@@ -136,21 +120,3 @@ class logout(Root):
         memcache.delete(sid)
     self.response.headers['Set-Cookie'] = 'pubmedos_sid=; expires=Sat, 29-Mar-1969 00:00:00 GMT;'
 
-
-def application():
-  urls = [('/', index),
-          ('/help', help),
-          ('/about', about),
-          ('/terms', terms),
-          ('/privacy', privacy),
-          ('/register', register),
-          ('/activate/(\S+)', activate),
-          ('/login', login),
-          ('/logout', logout)]
-  return webapp.WSGIApplication(urls, debug=DEBUG)
-
-def main():
-  run_wsgi_app(application())
-
-if __name__ == '__main__':
-  main()

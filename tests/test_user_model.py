@@ -1,8 +1,10 @@
 from models.user import User
 
-def test_create():
+def setup():
     for user in User.all():
         user.delete()
+
+def test_create():
     user = User.get_or_insert_by_username(username='marcora', password='123456', email='marcora@caltech.edu', lastname='Marcora', forename='Edoardo')
     assert user.is_saved()
     assert user.key().name() == 'username:marcora'
