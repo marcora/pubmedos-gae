@@ -66,7 +66,7 @@ class Article(db.Model):
         pass
 
     def record(self):
-        xml = fromstring(self.xml.encode('utf-8'))
+        xml = fromstring(self.xml)
         med = xml.find('.//MedlineCitation')
         title = med.findtext('./Article/ArticleTitle')
         journal = med.findtext('./MedlineJournalInfo/MedlineTA')

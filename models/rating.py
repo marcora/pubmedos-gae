@@ -3,7 +3,6 @@ from google.appengine.ext import db
 from models.user import User
 from models.article import Article
 from models.reprint import Reprint
-from models.folder import Folder
 
 from postmarkup import postmarkup
 def annotation_to_html(annotation):
@@ -77,7 +76,8 @@ class Rating(db.Model):
 
     @property
     def folders(self):
-        return Folder.get(self.folder_list)
+      from models.folder import Folder
+      return Folder.get(self.folder_list)
 
     def has_reprint(self):
         return not self.reprint is None

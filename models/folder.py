@@ -41,6 +41,7 @@ class Folder(db.Model):
 
     @property
     def ratings(self):
+        from models.rating import Rating
         return Rating.gql('WHERE folder_list = :1', self.key())
 
     def put(self):
@@ -80,6 +81,3 @@ class Folder(db.Model):
             return True
         except:
             return False
-
-
-from models.rating import Rating

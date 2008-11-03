@@ -12,10 +12,7 @@ def test_create():
     assert user.lastname == 'Marcora'
     assert user.forename == 'Edoardo'
     assert user.suffix == ''
-    assert user.ratings
-    assert user.folders
-    assert user.name == 'Edoardo Marcora'
-    assert user.authored_articles
-    assert user.reprints
-    assert user.reprints_filesize_sum
 
+def test_name():
+    user = User.get_or_insert_by_username(username='marcora')
+    assert user.name == 'Edoardo Marcora'
