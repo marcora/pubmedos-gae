@@ -1,6 +1,6 @@
 import sys, os, logging, urllib, re
 import mimetypes
-import simplejson as json
+import simplejson
 import Cookie
 
 from google.appengine.ext import db
@@ -55,15 +55,7 @@ def login_required(request_handler):
 ## base controller
 class Controller(webapp.RequestHandler):
 
-  def json(self, content):
-    self.response.headers['Content-Type'] = 'application/json' # 'text/javascript'
-    cb = self.request.get('callback')
-    if cb:
-      self.response.out.write(cb + '(' + json.dumps(content) + ')')
-    else:
-      self.response.out.write(json.dumps(content))
-
-  def template(self, format='text/html'):
+  def template(self, format):
     ext = mimetypes.guess_extension(format)
     if ext:
       template_name = self.__class__.__bases__[0].__name__.lower() + '/' + self.__class__.__name__.lower() + ext
@@ -74,18 +66,36 @@ class Controller(webapp.RequestHandler):
     else:
       raise
 
-  def text(self, text, format='text/plain'):
-    ext = mimetypes.guess_extension(format)
-    if ext:
-      self.response.headers["Content-Type"] = format
-      self.response.out.write(unicode(text))
-    else:
-      raise
+  def pdf(self, content):
+    self.response.headers["Content-Type"] = 'application/pdf'
+    self.response.out.write(content)
 
-  def xml(self, xml, format='text/xml'):
-    ext = mimetypes.guess_extension(format)
-    if ext:
-      self.response.headers["Content-Type"] = format
-      self.response.out.write(unicode(xml))
+  def json(self, content):
+    self.response.headers['Content-Type'] = 'application/json' # 'text/javascript'
+    cb = self.request.get('callback')
+    if cb:
+      self.response.out.write(cb + '(' + simplejson.dumps(content) + ')')
     else:
-      raise
+      self.response.out.write(simplejson.dumps(content))
+
+  def html(self, content=None):
+    if content:
+      self.response.headers["Content-Type"] = 'text/html'
+      self.response.out.write(content.encode('utf-8'))
+    else:
+      self.template('text/html')
+
+  def xml(self, content=None):
+    if content:
+      self.response.headers["Content-Type"] = 'text/xml'
+      self.response.out.write(content.encode('utf-8'))
+    else:
+      self.template('text/xml')
+
+  def text(self, content=None):
+    if content:
+      self.response.headers["Content-Type"] = 'text/plain'
+      self.response.out.write(content.encode('utf-8'))
+    else:
+      self.template('text/plain')
+

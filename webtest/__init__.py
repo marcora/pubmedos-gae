@@ -150,7 +150,7 @@ class TestApp(object):
     def _gen_request(self, method, url, params='', headers=None, extra_environ=None,
              status=None, upload_files=None, expect_errors=False):
         """
-        Do a generic request.  
+        Do a generic request.
         """
         environ = self._make_environ(extra_environ)
         # @@: Should this be all non-strings?
@@ -214,7 +214,7 @@ class TestApp(object):
                                  upload_files=upload_files,
                                  expect_errors=expect_errors)
 
-    def delete(self, url, headers=None, extra_environ=None,
+    def delete(self, url, params='', headers=None, extra_environ=None,
                status=None, expect_errors=False):
         """
         Do a DELETE request.  Very like the ``.get()`` method.
@@ -507,7 +507,7 @@ class TestResponse(Response):
             tag='a', href_attr='href',
             href_extract=None,
             content=description,
-            id=linkid, 
+            id=linkid,
             href_pattern=href,
             html_pattern=anchor,
             index=index, verbose=verbose)
@@ -635,7 +635,7 @@ class TestResponse(Response):
     _normal_body_regex = re.compile(r'[ \n\r\t]+')
 
     _normal_body = None
-    
+
     def normal_body__get(self):
         if self._normal_body is None:
             self._normal_body = self._normal_body_regex.sub(
@@ -863,7 +863,7 @@ class TestRequest(Request):
 
 ########################################
 ## Form objects
-######################################## 
+########################################
 
 class Form(object):
 
@@ -1217,11 +1217,11 @@ class MultipleSelect(Field):
             for option, checked in self.options:
                 if checked:
                     selected_values.append(option)
-                
+
             if self.options and (not selected_values):
                 selected_values = None
             return selected_values
-    
+
     value = property(value__get, value__set)
 
 Field.classes['multiple_select'] = MultipleSelect
@@ -1285,7 +1285,7 @@ class Submit(Field):
     """
     Field representing ``<input type="submit">`` and ``<button>``
     """
-    
+
     settable = False
 
     def value__get(self):

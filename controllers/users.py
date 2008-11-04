@@ -10,7 +10,8 @@ class item(Users):
   def get(self, username):
     user = User.get_by_username(username)
     if user:
-      pass
+      self.user = user
+      self.html()
     else:
       self.error(404)
 

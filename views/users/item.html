@@ -1,8 +1,8 @@
 <%inherit file="/app/base.html"/>
 
 % if user:
-<h2><img src="/images/user.png" /> ${ user.long_name } [${ user.username }]</h2>
-<p>Click <a href="#">here</a> to send a message to ${ user.long_name }</p>
+<h2><img src="/images/user.png" /> ${ user.name } [${ user.username }]</h2>
+<p>Click <a href="#">here</a> to send a message to ${ user.name }</p>
 <h3>Publications</h3>
 <ul>
   % for article in user.authored_articles:

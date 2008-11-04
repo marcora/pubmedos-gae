@@ -76,7 +76,8 @@ class item_annotation(Articles):
     else:
       value = self.request.get('value')
       rating.update_annotation(value)
-      record = rating.to_hash_plus()
+      record = article.to_hash()
+      record.update(rating.to_hash())
       self.json(record)
 
 class item_reprint(Articles):
@@ -258,6 +259,6 @@ class item_sponsored_links(Articles):
       self.source = record['source']
       self.abstract = record['abstract']
       self.keywords = record['keywords']
-      self.template()
+      self.html()
     else:
       self.error(404)

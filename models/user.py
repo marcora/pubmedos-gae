@@ -8,8 +8,8 @@ class User(Model):
     username = db.StringProperty(required=True, validator=lambda v: re.match(r'^\w+$', v))
     password = db.StringProperty(required=True)
     email = db.EmailProperty(required=True, validator=lambda v: re.match(r'^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$', v))
-    lastname = db.StringProperty(required=True, validator=lambda v: type(v) == type(u''))
-    forename = db.StringProperty(required=True, validator=lambda v: type(v) == type(u''))
+    lastname = db.StringProperty(required=True, validator=lambda v: isinstance(v, unicode))
+    forename = db.StringProperty(required=True, validator=lambda v: isinstance(v, unicode))
     suffix = db.StringProperty(default=u'', choices=set([u'',u'Jr',u'Sr',u'2nd',u'3rd',u'4th',u'5th']))
     activation_code = db.StringProperty()
     # ratings

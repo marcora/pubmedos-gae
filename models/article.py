@@ -8,7 +8,7 @@ from models.app import *
 class Article(Model):
     ## datastore schema
     pmid = db.IntegerProperty(required=True)
-    xml = db.TextProperty(required=True, validator=lambda v: type(v) == type(u''))
+    xml = db.TextProperty(required=True, validator=lambda v: isinstance(v, unicode))
     # ratings
     ratings_average_rating_cache = db.FloatProperty()
     ratings_count_cache = db.IntegerProperty(required=True, default=0)
@@ -66,7 +66,7 @@ class Article(Model):
         pass
 
     def record(self):
-        xml = fromstring(self.xml)
+        xml = fromstring(self.xml.encode('utf-8'))
         med = xml.find('.//MedlineCitation')
         title = med.findtext('./Article/ArticleTitle')
         journal = med.findtext('./MedlineJournalInfo/MedlineTA')

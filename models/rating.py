@@ -5,15 +5,6 @@ from models.reprint import Reprint
 from models.app import *
 
 from postmarkup import postmarkup
-def annotation_to_html(annotation):
-  annotation_markup = postmarkup.create(use_pygments=False)
-  annotation_markup.add_tag(u'pubmed',
-                            postmarkup.SearchTag,
-                            u'pubmed',
-                            u"http://www.ncbi.nlm.nih.gov/pubmed/%s", u'pubmed.gov')
-  annotation_markup.add_tag(u'sub', postmarkup.SimpleTag, u'sub', u'sub')
-  annotation_markup.add_tag(u'sup', postmarkup.SimpleTag, u'sup', u'sup')
-  return annotation_markup(annotation)
 
 class Rating(Model):
     ## datastore schema
@@ -54,10 +45,6 @@ class Rating(Model):
                  'reprint': self.has_reprint() }
 
     def to_hash_plus(self):
-        if self.annotation:
-            annotation_html = annotation_to_html(self.annotation)
-        else:
-            annotation_html = '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
         if self.is_file:
             folders = [folder.to_hash() for folder in self.folders if folder]
         else:
@@ -71,7 +58,7 @@ class Rating(Model):
                  'author': self.is_author,
                  'reprint': self.has_reprint(),
                  'annotation': self.annotation,
-                 'annotation_html': annotation_html,
+                 'annotation_html': self.annotation_html,
                  'folders': folders }
 
     @property
@@ -91,6 +78,21 @@ class Rating(Model):
             return True
         except:
             return False
+
+    @property
+    def annotation_html(self):
+      if self.annotation:
+        annotation_markup = postmarkup.create(use_pygments=False)
+        annotation_markup.add_tag(u'pubmed',
+                                  postmarkup.SearchTag,
+                                  u'pubmed',
+                                  u"http://www.ncbi.nlm.nih.gov/pubmed/%s", u'pubmed.gov')
+        annotation_markup.add_tag(u'sub', postmarkup.SimpleTag, u'sub', u'sub')
+        annotation_markup.add_tag(u'sup', postmarkup.SimpleTag, u'sup', u'sup')
+        annotation_html =  annotation_markup(self.annotation)
+      else:
+        annotation_html = '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
+      return annotation_html
 
     def update_annotation(self, annotation):
         try:

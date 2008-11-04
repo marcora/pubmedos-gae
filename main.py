@@ -1,7 +1,7 @@
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-from controllers import root, articles, users, folders, article_folders, admin
+from controllers import *
 
 ## routes
 def application():
@@ -32,14 +32,15 @@ def application():
           ('/articles/(\d+)/annotation', articles.item_annotation),
           ('/articles/(\d+)/reprint', articles.item_reprint),
           ('/articles/(\d+)/sponsored_links', articles.item_sponsored_links),
+          ('/articles/(\d+)/xml', articles.item_xml),
           ('/folders/?', folders.root),
           ('/folders/(\d+)', folders.item),
           ('/folders/(\d+)/articles/?', folders.item_articles),
           ('/folders/(\d+)/articles/redirect', folders.item_articles_redirect),
           ('/folders/dialog', folders.root_dialog),
-          ('/articles/(\d+)/folders/?', article_folders.root),
-          ('/articles/(\d+)/folders/(\d+)', article_folders.item),
-          ('/articles/(\d+)/folders/dialog', article_folders.root_dialog),
+          ('/articles/(\d+)/folders/?', articles_folders.root),
+          ('/articles/(\d+)/folders/(\d+)', articles_folders.item),
+          ('/articles/(\d+)/folders/dialog', articles_folders.root_dialog),
           ('/admin/?', admin.root)]
 
   return webapp.WSGIApplication(urls, debug=True)
