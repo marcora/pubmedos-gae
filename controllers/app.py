@@ -10,9 +10,9 @@ from google.appengine.api import users
 from google.appengine.ext import webapp
 
 from models.user import User
+from models.article import Article
 from models.reprint import Reprint
 from models.folder import Folder
-from models.article import Article
 from models.rating import Rating
 
 from mako.lookup import TemplateLookup
