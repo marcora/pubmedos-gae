@@ -8,10 +8,7 @@
       // Load jQuery
       google.load("jquery", "1");
       google.setOnLoadCallback(function(){
-      jQuery.noConflict();
-      (function($) {
-      $('.header').hide();
-      })(jQuery);
+        ${self.javascript()}
       });
     </script>
     % if title is UNDEFINED:
@@ -24,7 +21,9 @@
     <div class="header">
       ${self.header()}
     </div>
-    ${self.body()}
+    <div class="body">
+      ${self.body()}
+    </div>
     <div class="footer">
       ${self.footer()}
     </div>
@@ -38,3 +37,8 @@
 <%def name="footer()">
     <p>&copy; 2008 Edoardo &quot;Dado&quot; Marcora</p>
 </%def>
+
+<%def name="javascript()">
+  // place javascript code here
+</%def>
+

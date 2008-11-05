@@ -5,6 +5,7 @@ from google.appengine.api import urlfetch
 
 from models.app import *
 
+
 class Article(Model):
     ## datastore schema
     pmid = db.IntegerProperty(required=True)
@@ -63,9 +64,6 @@ class Article(Model):
         self.ratings_count_cache = count
         self.ratings_average_rating_cache = average
         self.put()
-
-    def delete(self):
-        pass
 
     def record(self):
         xml = fromstring(self.xml.encode('utf-8'))

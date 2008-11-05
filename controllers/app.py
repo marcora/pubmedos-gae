@@ -52,6 +52,7 @@ def login_required(request_handler):
       request_handler(self, *args, **kwargs)
   return wrapper
 
+
 ## base controller
 class Controller(webapp.RequestHandler):
 

@@ -1,10 +1,11 @@
+from postmarkup import postmarkup
+
+from models.app import *
+
 from models.user import User
 from models.article import Article
 from models.reprint import Reprint
 
-from models.app import *
-
-from postmarkup import postmarkup
 
 class Rating(Model):
     ## datastore schema

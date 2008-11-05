@@ -41,7 +41,6 @@ def test_login_action_after_activation():
     user = User.get_by_username('marcora')
     assert user.activation_code
     res = app.get('/activate/' + user.activation_code)
-    res = res.follow() # redirect to pubmed
     user = User.get_by_username('marcora')
     assert not user.activation_code
     res = app.post('/login', {'username':'marcora', 'password':'654321'})

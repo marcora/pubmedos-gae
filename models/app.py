@@ -9,7 +9,6 @@ def transaction(wrapped):
         return db.run_in_transaction(wrapped, *args, **kwargs)
     return wrapper
 
-
 ## base model
 class Model(db.Model):
     pass

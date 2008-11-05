@@ -10,6 +10,7 @@ def really_urlsafe_b64encode(s):
 def really_urlsafe_b64decode(s):
      return base64.urlsafe_b64decode(s + '=' * (len(s) % 4))
 
+
 class Reprint(Model):
     ## datastore schema
     checksum = db.StringProperty(required=True)
@@ -17,6 +18,7 @@ class Reprint(Model):
     filesize = db.IntegerProperty(required=True)
     updated_at = db.DateTimeProperty(required=True, auto_now=True)
     created_at = db.DateTimeProperty(required=True, auto_now_add=True)
+    # ratings
 
     ## class methods
     @staticmethod

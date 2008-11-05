@@ -66,9 +66,10 @@ class activate(Root):
     if user:
       user.activation_code = None
       user.put()
-      self.redirect('http://www.pubmed.gov/')
+      self.success = True
     else:
-      self.error(403)
+      self.success = False
+    self.html()
 
 class login(Root):
   def post(self):
