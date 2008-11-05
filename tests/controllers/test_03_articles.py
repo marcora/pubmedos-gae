@@ -1,5 +1,6 @@
 from webtest import TestApp
 from main import application
+
 from models.user import User
 
 app = TestApp(application())
