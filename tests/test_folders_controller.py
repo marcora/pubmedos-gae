@@ -38,9 +38,13 @@ def test_update_action():
     folder_hash = { 'id': 3, 'title':'Foo', 'ratings_count': 0 }
     assert res.json == folder_hash
 
+def test_dialog():
+    res = app.get('/folders/dialog')
+
 def test_delete_action():
     res = app.delete('/folders/5', status=404) # no folder
     res = app.delete('/folders/4', status=404) # other folder
     res = app.delete('/folders/3')
     res = app.get('/folders')
     assert res.json == []
+

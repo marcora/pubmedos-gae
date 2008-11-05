@@ -30,6 +30,9 @@ def test_create_action():
     res = app.get('/articles/16159402/folders')
     assert res.json == [folder_hash]
 
+def test_dialog():
+    res = app.get('/articles/16159402/folders/dialog')
+
 def test_destroy_action():
     res = app.delete('/articles/16159402/folders/3', status=400) # no folder
     res = app.get('/articles/16159402/folders')

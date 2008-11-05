@@ -39,6 +39,7 @@ def test_item_update_annotation_action():
     assert res.json['annotation'] == None
     res = app.post('/articles/16159402/annotation', {'value':'foo'})
     res = app.get('/articles/16159402')
+    print str(res)
     assert res.json['annotation'] == 'foo'
 
 def test_item_toggle_favorite_action():

@@ -17,8 +17,8 @@ class Rating(Model):
     is_work = db.BooleanProperty(required=True, default=False)
     is_read = db.BooleanProperty(required=True, default=False)
     is_author = db.BooleanProperty(required=True, default=False)
-    annotation = db.TextProperty(validator=lambda v: type(v) == type(u''))
-    xml = db.TextProperty(validator=lambda v: type(v) == type(u''))
+    annotation = db.TextProperty(validator=lambda v: isinstance(v, unicode))
+    xml = db.TextProperty(validator=lambda v: isinstance(v, unicode))
     reprint = db.ReferenceProperty(Reprint, collection_name='ratings')
     folder_list = db.ListProperty(db.Key)
     updated_at = db.DateTimeProperty(required=True, auto_now=True)
@@ -89,10 +89,9 @@ class Rating(Model):
                                   u"http://www.ncbi.nlm.nih.gov/pubmed/%s", u'pubmed.gov')
         annotation_markup.add_tag(u'sub', postmarkup.SimpleTag, u'sub', u'sub')
         annotation_markup.add_tag(u'sup', postmarkup.SimpleTag, u'sup', u'sup')
-        annotation_html =  annotation_markup(self.annotation)
+        return annotation_markup(self.annotation)
       else:
-        annotation_html = '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
-      return annotation_html
+        return '<img class="annotation_img" alt="[annotation]" src="chrome://pubmedos/skin/pencil.png" />&nbsp;Click here to add a private annotation to this article'
 
     def update_annotation(self, annotation):
         try:

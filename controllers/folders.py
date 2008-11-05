@@ -100,5 +100,5 @@ class root_dialog(Folders):
   def get(self):
     current_user = self.current_user
     self.folders = current_user.folders.order('title')
-    self.template()
+    self.html()
 
