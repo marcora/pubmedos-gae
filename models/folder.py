@@ -31,7 +31,9 @@ class Folder(Model):
 
     ## instance methods
     def to_hash(self):
-        return { 'id': self.key().id(), 'title': self.title, 'ratings_count': self.ratings_count_cache }
+        return {'id': self.key().id(),
+                'title': self.title,
+                'ratings_count': self.ratings_count_cache }
 
     @property
     def ratings(self):

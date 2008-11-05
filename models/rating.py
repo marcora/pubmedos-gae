@@ -34,32 +34,21 @@ class Rating(Model):
         return rating
 
     ## instance methods
-    def to_hash(self):
-        return { 'id': self.pmid,
-                 'rating': self.rating,
-                 'file': self.is_file,
-                 'favorite': self.is_favorite,
-                 'read': self.is_read,
-                 'work': self.is_work,
-                 'author': self.is_author,
-                 'reprint': self.has_reprint() }
-
-    def to_hash_plus(self):
-        if self.is_file:
+    def to_hash(self, include_annotation=False, include_folders=False):
+        hash = {'id': self.pmid,
+                'rating': self.rating,
+                'file': self.is_file,
+                'favorite': self.is_favorite,
+                'read': self.is_read,
+                'work': self.is_work,
+                'author': self.is_author,
+                'reprint': self.has_reprint() }
+        if include_annotation:
+            hash.update({'annotation': self.annotation, 'annotation_html': self.annotation_html })
+        if self.is_file and include_folders:
             folders = [folder.to_hash() for folder in self.folders if folder]
-        else:
-            folders = []
-        return { 'id': self.pmid,
-                 'rating': self.rating,
-                 'file': self.is_file,
-                 'favorite': self.is_favorite,
-                 'read': self.is_read,
-                 'work': self.is_work,
-                 'author': self.is_author,
-                 'reprint': self.has_reprint(),
-                 'annotation': self.annotation,
-                 'annotation_html': self.annotation_html,
-                 'folders': folders }
+            hash.update({'folders': folders })
+        return hash
 
     @property
     def folders(self):
@@ -68,16 +57,6 @@ class Rating(Model):
 
     def has_reprint(self):
         return not self.reprint is None
-
-    def update_rating(self, rating):
-        try:
-            if self.rating == int(rating): raise
-            self.rating = int(rating)
-            self.put()
-            self.article.cache_ratings_stats()
-            return True
-        except:
-            return False
 
     @property
     def annotation_html(self):
@@ -108,6 +87,16 @@ class Rating(Model):
             self.folder_list = []
         self.put()
         return self.is_file
+
+    def update_rating(self, rating):
+        try:
+            if self.rating == int(rating): raise
+            self.rating = int(rating)
+            self.put()
+            self.article.cache_ratings_stats()
+            return True
+        except:
+            return False
 
     def toggle_favorite(self):
         value = not self.is_favorite

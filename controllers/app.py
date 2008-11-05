@@ -1,5 +1,5 @@
 import sys, os, logging, urllib, re
-import mimetypes
+import mimetypes, base64
 import simplejson
 import Cookie
 

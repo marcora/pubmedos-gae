@@ -84,5 +84,3 @@ def test_item_sponsored_links_action():
 def test_item_xml_action():
     res = app.get('/articles/16159402/xml')
     assert "Huntington's disease" in res
-
-

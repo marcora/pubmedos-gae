@@ -28,7 +28,7 @@ class root(Articles):
             record.update(rating.to_hash())
             records.append(record)
           else:
-            records.append(article.to_hash)
+            records.append(article.to_hash())
         else:
           records.append({ 'id': pmids[i] })
         i += 1
@@ -44,7 +44,7 @@ class item(Articles):
       self.error(404)
     else:
       record = article.to_hash()
-      record.update(rating.to_hash_plus())
+      record.update(rating.to_hash(include_annotation=True, include_folders=True))
       self.json(record)
 
 class item_rating(Articles):
@@ -77,7 +77,7 @@ class item_annotation(Articles):
       value = self.request.get('value')
       rating.update_annotation(value)
       record = article.to_hash()
-      record.update(rating.to_hash())
+      record.update(rating.to_hash(include_annotation=True))
       self.json(record)
 
 class item_reprint(Articles):

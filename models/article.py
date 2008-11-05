@@ -34,7 +34,9 @@ class Article(Model):
 
     ## instance methods
     def to_hash(self):
-        return { 'id': self.pmid, 'ratings_count': self.ratings_count_cache, 'ratings_average_rating': self.ratings_average_rating_cache }
+        return {'id': self.pmid,
+                'ratings_count': self.ratings_count_cache,
+                'ratings_average_rating': self.ratings_average_rating_cache }
 
     @property
     def ratings_count(self):
