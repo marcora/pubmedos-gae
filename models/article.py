@@ -9,7 +9,7 @@ from models.app import *
 class Article(Model):
     ## datastore schema
     pmid = db.IntegerProperty(required=True)
-    xml = db.TextProperty(required=True, validator=lambda v: isinstance(v, unicode))
+    xml = db.TextProperty(required=True)
     # ratings
     ratings_average_rating_cache = db.FloatProperty()
     ratings_count_cache = db.IntegerProperty(required=True, default=0)

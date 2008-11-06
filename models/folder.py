@@ -6,7 +6,7 @@ from models.user import User
 class Folder(Model):
     ## datastore schema
     user = db.ReferenceProperty(User, required=True, collection_name='folders')
-    title = db.CategoryProperty(required=True, validator=lambda v: isinstance(v, unicode))
+    title = db.CategoryProperty(required=True)
     # sup_folder = db.SelfReferenceProperty(collection_name='sub_folders')
     ratings_count_cache = db.IntegerProperty(required=True, default=0)
     updated_at = db.DateTimeProperty(required=True, auto_now=True)

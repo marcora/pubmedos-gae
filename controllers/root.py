@@ -35,7 +35,7 @@ class register(Root):
     lastname = self.request.get('lastname').decode('utf-8').strip()
     forename = self.request.get('forename').decode('utf-8').strip()
     suffix = self.request.get('suffix')
-    if suffix: suffix = decode('utf-8').strip()
+    if suffix: suffix = suffix.strip()
     if username and \
           password_hash and \
           lastname and \
