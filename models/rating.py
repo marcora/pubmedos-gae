@@ -54,7 +54,37 @@ class Rating(Model):
     @property
     def folders(self):
       from models.folder import Folder
-      return Folder.get(self.folder_list)
+      folders = Folder.get(self.folder_list)
+      if None in folders:
+          compact = []
+          for folder in folders:
+              if folder is not None:
+                  compact.append(folder)
+          folders = compact
+          self.folder_list = [folder.key() for folder in folders]
+          self.put()
+      return folders
+
+    @transaction
+    def append_folder(self, folder):
+        if self.user.key() != folder.user.key(): return False
+        if not folder.key() in self.folder_list:
+            self.folder_list.append(folder.key())
+            self.put()
+            folder.ratings_count_cache += 1
+            folder.put()
+        return True
+
+
+    @transaction
+    def remove_folder(self, folder):
+        if self.user.key() != folder.user.key(): return False
+        if folder.key() in self.folder_list:
+            self.folder_list.remove(folder.key())
+            self.put()
+            folder.ratings_count_cache -= 1
+            folder.put()
+        return True
 
     def has_reprint(self):
         return not self.reprint is None

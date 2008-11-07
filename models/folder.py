@@ -15,8 +15,7 @@ class Folder(Model):
     ## class methods
     @staticmethod
     def get_or_insert_by_user_and_title(user, title):
-        title = title.decode('utf-8')
-        folder = Folder.gql("WHERE user = :user AND title = :title AND ANCESTOR IS :user", user=user, title=title).get()
+        folder = Folder.get_by_user_and_title(user, title)
         if folder is None:
             folder = Folder(user=user, title=db.Category(title), parent=user)
             folder.put()
@@ -43,38 +42,7 @@ class Folder(Model):
 
     def put(self):
         # ensure uniqueness based on user and title
-        if not self.is_saved and Folder.get_by_user_and_title(self.user, self.title):
+        if not self.is_saved() and Folder.get_by_user_and_title(self.user, self.title):
             raise db.NotSavedError()
         return super(Folder, self).put()
 
-    def delete(self):
-        # cleanup ratings folder list
-        for rating in self.ratings:
-            self.remove_rating(rating)
-        return super(Folder, self).delete()
-
-    @transaction
-    def append_rating(self, rating):
-        try:
-            if self.user.key() != rating.user.key(): raise Exception()
-            if not self.key() in rating.folder_list:
-                rating.folder_list.append(self.key())
-                rating.put()
-                self.ratings_count_cache += 1
-                self.put()
-            return True
-        except:
-            return False
-
-    @transaction
-    def remove_rating(self, rating):
-        try:
-            if self.user.key() != rating.user.key(): raise Exception()
-            if self.key() in rating.folder_list:
-                rating.folder_list.remove(self.key())
-                rating.put()
-                self.ratings_count_cache -= 1
-                self.put()
-            return True
-        except:
-            return False

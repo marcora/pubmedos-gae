@@ -22,6 +22,16 @@ def test_index_action_with_ids():
     assert type(res.json) == type([])
     assert len(res.json) == 2
 
+def test_index_action_with_invalid_ids():
+    res = app.get('/articles?id=16159402&id=foo')
+    assert type(res.json) == type([])
+    assert len(res.json) == 1
+
+def test_index_action_with_dup_ids():
+    res = app.get('/articles?id=16159402&id=16159402&id=123456')
+    assert type(res.json) == type([])
+    assert len(res.json) == 2
+
 def test_item_action():
     res = app.get('/articles/16159402')
     assert res.json['id'] == 16159402

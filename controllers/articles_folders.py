@@ -53,7 +53,7 @@ class item(ArticlesFolders):
     else:
       folder = Folder.get_by_id(int(folder_id), parent=current_user)
       if folder:
-        self.json(folder.append_rating(rating))
+        self.json(rating.append_folder(folder))
       else:
         self.error(400)
 
@@ -67,7 +67,6 @@ class item(ArticlesFolders):
     else:
       folder = Folder.get_by_id(int(folder_id), parent=current_user)
       if folder:
-        self.json(folder.remove_rating(rating))
+        self.json(rating.remove_folder(folder))
       else:
         self.error(400)
-

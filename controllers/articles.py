@@ -14,13 +14,13 @@ class root(Articles):
     records = []
     id = self.request.get('id', allow_multiple=True)
     if id:
-      pmids = [pmid for pmid in set(id)] # remove duplicates
+      id = list(set(id)) # remove duplicates
+      pmids = [pmid for pmid in id if re.match(r'^\d+$', pmid)]
       article_key_names = ['pmid:'+pmid for pmid in pmids]
       rating_key_names = ['username:'+current_user.username+'|'+'pmid:'+pmid for pmid in pmids]
       articles = Article.get_by_key_name(article_key_names)
       ratings = Rating.get_by_key_name(rating_key_names, parent=current_user)
-      i = 0
-      for article in articles:
+      for i, article in enumerate(articles):
         if article:
           rating = ratings[i]
           if rating:
@@ -30,8 +30,7 @@ class root(Articles):
           else:
             records.append(article.to_hash())
         else:
-          records.append({ 'id': pmids[i] })
-        i += 1
+          records.append({ 'id': int(pmids[i]) })
     self.json(records)
 
 class item(Articles):
